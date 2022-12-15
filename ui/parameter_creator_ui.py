@@ -50,8 +50,6 @@ class ParameterCreator(QWidget):
 
         self.browse = QPushButton("Browse Files")
         self.browse.clicked.connect(self.getfile)
-        # self.file = QLabel()
-        # layout.addWidget(self.btn)
         layout.addRow('Load Parameters', self.browse)
 
         self.analyze = QPushButton("Run Dimensional Analysis")
