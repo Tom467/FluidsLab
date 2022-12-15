@@ -42,6 +42,7 @@ class DimensionalAnalysis:
         return self.regression_model.predict(values.T)
 
     def generate_model(self):
+        print([str(group.formula) for group in self.pi_groups])
         x = np.array([copy.deepcopy(pi_group.value) for pi_group in self.pi_groups[1:]])
         y = copy.deepcopy(self.pi_groups[0].value)
         self.regression_model = GradientDescent(np.transpose(x), y)
@@ -69,7 +70,7 @@ class DimensionalAnalysis:
         if test:
             pass
         else:
-            # The following loop can find oll the possible pi groups from all the different combinations of repeating variables
+            # The following loop can find All the possible pi groups from all the different combinations of repeating variables
             for repeating_variables in self.repeating_variables:
                 group = self.parameters - repeating_variables
                 for variable in group:
@@ -85,9 +86,12 @@ class DimensionalAnalysis:
         for i, pi_group in enumerate(self.pi_groups[1:]):
             x = pi_group.value
             axis[i].scatter(x, y.value)
-            axis[i].set_title(y.formula + ' vs. ' + pi_group.formula)
+            axis[i].set_ylabel(y.formula)
+            axis[i].set_xlabel(pi_group.formula)
+            # axis[i].set_title(y.formula + ' vs. ' + pi_group.formula)
 
-        self.regression_model.plot()
+        if self.regression_model is not None:
+            self.regression_model.plot()
         plt.show()
         # index = range(len(y.value))
         # axis[i+1].scatter(index, y.value, s=10, c='b', marker="s", label='measured')
@@ -98,32 +102,32 @@ class DimensionalAnalysis:
 
 if __name__ == '__main__':
 
-    # # Reynolds number
-    rho = Parameter(value=1000, units=Units.density, name='rho')
-    u = Parameter(value=[.15, 0.2], units=Units.velocity, name='u')
-    hz = Parameter(value=np.array([10, 15, 20, 25]), units=Units.frequency, name='Hz')
-    L1 = Parameter(value=np.array([0.025, 0.0125]), units=Units.length, name='L')
-    mu = Parameter(value=8.9e-4, units=Units.viscosity_dynamic, name='mu')
+    # U, y, h, rho, mu, dpdx
+    u = Parameter(value=np.array([1,1,1]), units=Units.velocity, name='u')
+    U = Parameter(value=np.array([1,1,1]), units=Units.velocity, name='U')
+    y = Parameter(value=np.array([1,1,1]), units=Units.length, name='y')
+    h = Parameter(value=np.array([1,1,1]), units=Units.length, name='h')
+    rho = Parameter(value=np.array([1,1,1]), units=Units.density, name='rho')
+    mu = Parameter(value=np.array([1,1,1]), units=Units.viscosity_dynamic, name='mu')
+    p = Parameter(value=np.array([1,1,1]), units=Units.pressure, name='p')
+    x = Parameter(value=np.array([1,1,1]), units=Units.length, name='x')
+    problem = ListOfParameters([U, h, rho, mu, u, y, p, x])
+    solution = DimensionalAnalysis(problem)
+    for group in solution.pi_groups:
+        print('pi group', group.formula)
 
     dP = Parameter(value=1000, units=Units.pressure, name='dP')
-    U_ave = Parameter(value=1000, units=Units.velocity, name='U_ave')
+    U = Parameter(value=1000, units=Units.velocity, name='U_ave')
     d1 = Parameter(value=1000, units=Units.length, name='d1')
     d2 = Parameter(value=1000, units=Units.length, name='d2')
     rho = Parameter(value=1000, units=Units.density, name='rho')
     mu = Parameter(value=8.9e-4, units=Units.viscosity_dynamic, name='mu')
+    print(Units.viscosity_dynamic)
 
-    param = ListOfParameters([dP, U_ave, d1, d2, rho, mu])  # [Units.velocity, Units.density, Units.length, Units.time]
-    D = DimensionalAnalysis(param)
-    for group in D.pi_groups:
-        print('pi group', group)
-    # print(len(param))
-    # D = DimensionalAnalysis(param, hz)
+    param = ListOfParameters([dP, U, d1, d2, rho, mu])  # [Units.velocity, Units.density, Units.length, Units.time]
+    # D = DimensionalAnalysis(param)
     # for group in D.pi_groups:
-    #     print(str(group))
-    # D.plot_pi_groups()
-    # print([str(group) for group in D.repeating_variables])
+    #     print('pi group', group)
 
-    # group = ListOfParameters([rho, u, L1])
-    # print(L2 not in group)
     # TODO test a list of parameters that are dimensionless then with groups of ranks 1-5
     # TODO test a dimensionless group that has fractional exponents

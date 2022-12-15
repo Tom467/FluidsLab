@@ -3,9 +3,9 @@ from util import Util
 
 class BaseUnits:
     Nondimensional = 1
-    Angle = 1
     Time = 2
     Mass = 3
+    Angle = 1
     Length = 5
     Temperature = 7
 
@@ -161,6 +161,7 @@ class Units:
     angular_acceleration = theta / T ** 2  # 1.25
     angular_velocity = theta / T  # 2.5
     area = L ** 2  # 121
+    charge = L ** 2 * T
     density = M / L ** 3  # 0.002253944402704733
     energy = M * L ** 2 / T ** 2  # 90.75
     entropy = energy / Temp  # ###########################################
@@ -187,6 +188,7 @@ class Units:
     velocity = L / T  # 5.5
     viscosity_dynamic = M / L / T  # 0.136363636
     viscosity_kinematic = L ** 2 / T  # 60.5
+    voltage = M * L ** 2 / T ** 3 / L ** 2
     volume = L ** 3  # 1331
     work = M * L ** 2 / T ** 2  # 90.75
     g = L / T ** 2  # 2.75
@@ -243,6 +245,7 @@ if __name__ == "__main__":
     test = ListOfUnits([Units.mass, Units.density])
     print(len(test))
     print(Units().get_units())
+    print(Units.force)
     # TODO why is the following code returning (kg * m) / (kg) instead of (m)?? "print(Units.mass * Units.velocity * Units.length / (Units.area * Units.viscosity_dynamic))"
 
 

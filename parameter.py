@@ -4,14 +4,14 @@ from units import Units, ListOfUnits
 
 class Parameter:
     def __init__(self, value=None, units=Units.nondimensional, formula=None, name=''):
-        # TODO use units to convert the value (example: if value=10 & units=cm, convert to value=0.01 & units=m
+        # TODO use units to convert the value (example: if value=10 & units=cm, convert to value=0.01 & units=m)
         self.value = np.array(value, dtype=np.float64)
         self.units = units
         self.formula = formula
         self.name = name
 
     def __str__(self):
-        return self.name + (f' {self.value}' if self.value else '') + f' {self.units}' if self.units else ''
+        return self.name + (f' {self.value}' if self.value is not None else '') + f' {self.units}' if self.units else ''
 
     def __add__(self, other):
         if isinstance(other, ListOfParameters):
@@ -32,7 +32,7 @@ class Parameter:
         return Parameter(value=(self.value / other), units=self.units)
 
     def __pow__(self, power, modulo=None):
-        if self.value:
+        if self.value is not None:
             return Parameter(value=(self.value ** power), units=(self.units ** power))
         else:
             return Parameter(units=(self.units ** power))
@@ -105,7 +105,7 @@ class ListOfParameters:
         return self._list[index]
 
     def __str__(self):
-        return str([str(unit) for unit in self])
+        return str([parameter.name for parameter in self])
 
     def __len__(self):
         return len(self._list)

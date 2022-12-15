@@ -27,9 +27,11 @@ class Data:
 
 
 if __name__ == "__main__":
-    experiment = Data("C:/Users/truma/Downloads/test - random data.csv")
+    experiment = Data("C:/Users/truma/Downloads/test - bernoulli.csv")
+    print(experiment.parameters)
     d = DimensionalAnalysis(experiment.parameters)
     d.plot()
+    print('pi groups', [group.formula for group in d.pi_groups])
 
     values = [80, 20, 9.8, 1, 1, 1]
     test = ListOfParameters([])
@@ -37,4 +39,4 @@ if __name__ == "__main__":
         # print(Parameter(value=values[i], units=parameter.units, name=parameter.name))
         test.append(Parameter(value=values[i], units=parameter.units, name=parameter.name))
     print('test', test)
-    test = d.predict(experiment.parameters)
+    # test = d.predict(experiment.parameters)

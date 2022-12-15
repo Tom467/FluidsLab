@@ -9,6 +9,10 @@ class FileReader(QWidget):
     def __init__(self, parent=None):
         super(FileReader, self).__init__(parent)
         self.file_location = None
+        self.data = None
+        self.reset_layout()
+
+    def reset_layout(self):
         layout = QVBoxLayout()
 
         self.btn = QPushButton("Browse Files")
@@ -25,7 +29,8 @@ class FileReader(QWidget):
                                             'c:\\', "Data files (*.csv)")
         self.file_location = fname[0]
         self.file.setText(self.file_location)
-        data = Data(self.file_location)
+        self.data = Data(self.file_location)
+        self.file.setText(str([param.name for param in self.data.parameters]))
 
 
 def main():

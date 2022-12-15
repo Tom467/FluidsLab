@@ -30,6 +30,7 @@ class PiGroup:
     def calculate_value(self, parameters):
         value = parameters[0].value
         for i, parameter in enumerate(parameters[1:]):
+            print('exp', i, self.exponents[i])
             value *= parameter.value**self.exponents[i]
         return value
         # TODO figure out what to return in addition to the total

@@ -14,7 +14,9 @@ class GradientDescent:
 
     def fit_model(self):
         self.model = self.model.fit(self.x_train, self.y_train)
+        print('shape', self.x_train.shape)
         self.coefficients = np.round(self.model.named_steps['linear'].coef_, 2)
+        print(self.coefficients)
 
     def predict(self, x_values):
         prediction = self.model.predict(x_values)
