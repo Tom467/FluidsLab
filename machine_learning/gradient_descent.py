@@ -7,6 +7,7 @@ from sklearn.preprocessing import PolynomialFeatures
 
 class GradientDescent:
     def __init__(self, x, y, degree=3):
+        self.x, self.y = x, y
         self.x_train, self.y_train, self.x_cross, self.y_cross, self.x_test, self.y_test = self.data_divider(x, y)
         self.coefficients = None
         self.model = Pipeline([('poly', PolynomialFeatures(degree=degree)), ('linear', LinearRegression(fit_intercept=False))])
@@ -14,21 +15,23 @@ class GradientDescent:
 
     def fit_model(self):
         self.model = self.model.fit(self.x_train, self.y_train)
-        print('shape', self.x_train.shape)
+        # print('shape', self.x_train.shape)
         self.coefficients = np.round(self.model.named_steps['linear'].coef_, 2)
-        print(self.coefficients)
+        # print(self.coefficients)
 
     def predict(self, x_values):
         prediction = self.model.predict(x_values)
         return prediction
 
-    def plot(self):
-        figure = plt.figure(2)
-        axis = figure.add_subplot(111)
-        y1 = self.predict(self.x_train)
-        axis.plot(y1, y1, c='r', label='predicted')
-        axis.scatter(y1, self.y_train, s=10, c='b', marker="s", label='measured')
+    def plot_data(self):
+        # figure = plt.figure
+        # axis = figure.add_subplot(111)
+        y1 = self.predict(self.x)
+        return y1, self.y
+        plt.plot(y1, y1, c='r', label='predicted')
+        plt.scatter(y1, self.y, s=10, c='b', marker="s", label='measured')
         plt.legend(loc='upper left')
+        # return figure
 
     def error(self, x, y):
         y1 = self.predict(x)

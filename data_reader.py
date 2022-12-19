@@ -6,9 +6,9 @@ from buckingham_pi_theorem.dimensional_analysis import DimensionalAnalysis
 
 
 class Data:
-    def __init__(self, file_location):
-        self.file_location = file_location
-        self.data = self.read_file(self.file_location)
+    def __init__(self, file, pandas=False):
+        self.file_location = '' if pandas else file
+        self.data = file if pandas else self.read_file(self.file_location)
         self.parameters = self.generate_list_of_parameters()
 
     @staticmethod
@@ -27,11 +27,11 @@ class Data:
 
 
 if __name__ == "__main__":
-    experiment = Data("C:/Users/truma/Downloads/test - bernoulli.csv")
-    print(experiment.parameters)
+    experiment = Data("C:/Users/truma/Downloads/test - bernoulli_v2.csv")
     d = DimensionalAnalysis(experiment.parameters)
     d.plot()
-    print('pi groups', [group.formula for group in d.pi_groups])
+
+    # [print(group, '\n', group.repeating_variables) for group in d.pi_group_sets]
 
     values = [80, 20, 9.8, 1, 1, 1]
     test = ListOfParameters([])
