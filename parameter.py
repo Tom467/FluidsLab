@@ -5,40 +5,40 @@ from units import Units, ListOfUnits
 class Parameter:
     def __init__(self, value=None, units=Units.nondimensional, formula=None, name=''):
         # TODO use units to convert the value (example: if value=10 & units=cm, convert to value=0.01 & units=m)
-        self.value = np.array(value, dtype=np.float64)
+        self.values = np.array(value, dtype=np.float64)
         self.units = units
         self.formula = formula
         self.name = name
 
     def __str__(self):
-        return self.name + (f' {self.value}' if self.value is not None else '') + f' {self.units}' if self.units else ''
+        return self.name + (f' {self.values}' if self.values is not None else '') + f' {self.units}' if self.units else ''
 
     def __add__(self, other):
         if isinstance(other, ListOfParameters):
             return ListOfParameters(ListOfParameters([self]) + other)
-        return Parameter(value=(self.value + other.value), units=self.units)
+        return Parameter(value=(self.values + other.values), units=self.units)
 
     def __sub__(self, other):
-        return Parameter(value=(self.value - other.value), units=self.units)
+        return Parameter(value=(self.values - other.values), units=self.units)
 
     def __mul__(self, other):
         if isinstance(other, Parameter):
-            return Parameter(value=(self.value * other.value), units=(self.units * other.units))
-        return Parameter(value=(self.value * other), units=self.units)
+            return Parameter(value=(self.values * other.values), units=(self.units * other.units))
+        return Parameter(value=(self.values * other), units=self.units)
 
     def __truediv__(self, other):
         if isinstance(other, Parameter):
-            return Parameter(value=(self.value / other.value), units=(self.units / other.units))
-        return Parameter(value=(self.value / other), units=self.units)
+            return Parameter(value=(self.values / other.values), units=(self.units / other.units))
+        return Parameter(value=(self.values / other), units=self.units)
 
     def __pow__(self, power, modulo=None):
-        if self.value is not None:
-            return Parameter(value=(self.value ** power), units=(self.units ** power))
+        if self.values is not None:
+            return Parameter(value=(self.values ** power), units=(self.units ** power))
         else:
             return Parameter(units=(self.units ** power))
 
     def __eq__(self, other):
-        return (self.value == other.value).all() and self.units == other.units
+        return (self.values == other.values).all() and self.units == other.units
 
 
 class Values:
