@@ -36,24 +36,19 @@ The Buckingham Pi Theorem outlines five steps for reducing the complexity of an 
 analysis:
 1. Write down the units of all the independent and dependent variables 
 2. Select the appropriate number of repeating variables:
-   1. The number of repeating variable depends on the number of base units included the units of the variables
-   2. Every base unit mass be included in at least one repeating variable
-   3. The units of the repeating variables must be linearly independent 
-3. Create a "Pi Group" by taking a non-repeating variable and cancelling its units by multiplying it with the 
-repeating variables raised to exponential powers 
+   * The number of repeating variable depends on the number of base units included the units of the variables 
+   * Every base unit mass be included in at least one repeating variable 
+   * The units of the repeating variables must be linearly independent 
+3. Create a "Pi Group" by taking a non-repeating variable and cancelling its units by multiplying it with the repeating variables raised to exponential powers 
 4. Repeat the previous step until one pi group has been made for each non-repeating variable 
 5. The pi groups can now be used to find the correlation between the dependent and independent variable
 
 Returning to our example of the ball on the string we would get the following:
-1. Number of oscillations (has no units), Swing time (s), mass (kg), string length (m), release angle 
-(radians), gravity (m/s^2)
-2. We have three base units (kg, m, s) so we need three repeating variables. There are multiple possible
-combinations of repeating variables that would be acceptable, and we will return to a discussion on this later
-but for now let us select the period, gravity, and mass.
+1. Number of oscillations (has no units), Swing time (s), mass (kg), string length (m), release angle (radians), gravity (m/s^2)
+2. We have three base units (kg, m, s) so we need three repeating variables. There are multiple possible combinations of repeating variables that would be acceptable, and we will return to a discussion on this later but for now let us select the period, gravity, and mass.
 3. The length of the string has units of 'm' which can be cancelled out by period^-2 and gravity^1
 4. As it turns out both the oscillations and the release angle are already dimensionless so this step is complete
-5. Our final pi groups are Oscillations, release angle, and string length divided by the period squared times 
-gravity
+5. Our final pi groups are Oscillations, release angle, and string length divided by the period squared times gravity
 
 It is apparent now that instead of describing the experiment with one dependent and five independent variables, 
 we can describe it with three pi groups. What originally needed 100,000 experiments can now be done with 100 

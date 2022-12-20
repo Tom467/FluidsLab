@@ -54,15 +54,15 @@ class PiGroup:
                     if self.exponents[i-1] == 1:
                         top += f'({parameter.name})'
                     else:
-                        top += f'({parameter.name}^{self.exponents[i-1]})'
+                        top += f'({parameter.name}^'+'{'+f'{self.exponents[i-1]}'+'})'
                 elif self.exponents[i-1] < 0:
                     if self.exponents[i-1] == -1:
                         bottom += f'({parameter.name})'
                     else:
-                        bottom += f'({parameter.name}^{-self.exponents[i-1]})'
+                        bottom += f'({parameter.name}^'+'{'+f'{-self.exponents[i-1]}'+'})'
 
-        self.formula = f'{top} / {bottom}' if bottom else top
-        self.formula_inverse = f'{bottom} / {top}' if bottom else top
+        self.formula = r'$\frac{t}{b}$'.replace('t', top).replace('b', bottom) if bottom else top
+        self.formula_inverse = f'{bottom} / {top}' if top else bottom
 
 
 class PiGroupSet:
