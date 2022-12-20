@@ -3,4 +3,4 @@ streamlit
 matplotlib
 pandas
 scikit-learn
-opencv-python
+opencv-python-headless
