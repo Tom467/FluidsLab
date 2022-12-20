@@ -66,4 +66,5 @@ Dimensional analysis has traditionally been done by hand by the experimenter. Th
 algebraic errors can occur in rushed calculations. It can be extra tedious exploring all the different 
 combinations of repeating variables. The algorithmic nature of dimensional analysis suggests that a computer 
 can aid in the process, and that is the goal of this project. This package seeks to take experimentally 
-collected data and display all possible relations using dimensional analysis for the user to then interpret.
+collected data and display all possible relations using dimensional analysis for the user to then interpret. 
+Incredible data is useless if it is displayed ineffectively.
