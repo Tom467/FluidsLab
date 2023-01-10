@@ -23,9 +23,12 @@ def generate_plots(dimensional_analysis, markers):
         with st.expander(text, expanded=True):
             for i, pi_group in enumerate(pi_group_set.pi_groups[1:]):
                 plt.figure()
+                legend = []
                 if len(markers) > 0:
                     for marker in markers:
                         plt.scatter(pi_group.values[marker[0]: marker[1]], pi_group_set.pi_groups[0].values[marker[0]: marker[1]], marker=marker[2])
+                        legend.append(marker[3])
+                    plt.legend(legend)
                 else:
                     plt.scatter(pi_group.values, pi_group_set.pi_groups[0].values)
                 plt.xlabel(pi_group.formula, fontsize=14)
@@ -66,13 +69,14 @@ if option == 'CSV File':
         number = st.sidebar.text_input('Number of Markers', value=0, placeholder='0')
         markers = []
         for i in range(int(number)):
+            label = st.sidebar.text_input(f'Label {i+1}', placeholder=f'label for group {i+1}')
             col1, col2 = st.sidebar.columns(2)
             with col1:
-                first = int(st.text_input(f'Marker {i+1} Beginning', value=0, placeholder='first index'))
+                first = int(st.text_input(f'Group {i+1} Beginning', value=0))
             with col2:
-                last = int(st.text_input(f'Marker {i+1} End', value=0, placeholder='last index'))
+                last = int(st.text_input(f'Group {i+1} End', value=0))
             marker_type = st.sidebar.selectbox(f'Marker {i+1}', available_markers, label_visibility='collapsed')
-            markers.append([first, last, available_markers[marker_type]])
+            markers.append([first, last, available_markers[marker_type], label])
 
         data = Data(ds, pandas=True)
         d = DimensionalAnalysis(data.parameters)
