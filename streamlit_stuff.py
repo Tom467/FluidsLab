@@ -14,7 +14,7 @@ def read_markdown_file(markdown_file):
     return Path(markdown_file).read_text()
 
 
-def generate_plots(dimensional_analysis):
+def generate_plots(dimensional_analysis, markers):
     plt.close('all')
     for h, pi_group_set in enumerate(dimensional_analysis.pi_group_sets):
         text = pi_group_set.repeating_variables[0].name
@@ -23,10 +23,15 @@ def generate_plots(dimensional_analysis):
         with st.expander(text, expanded=True):
             for i, pi_group in enumerate(pi_group_set.pi_groups[1:]):
                 plt.figure()
-                plt.scatter(pi_group.values, pi_group_set.pi_groups[0].values)
+                if len(markers) > 0:
+                    for marker in markers:
+                        plt.scatter(pi_group.values[marker[0]: marker[1]], pi_group_set.pi_groups[0].values[marker[0]: marker[1]], marker=marker[2])
+                else:
+                    plt.scatter(pi_group.values, pi_group_set.pi_groups[0].values)
                 plt.xlabel(pi_group.formula, fontsize=14)
                 plt.ylabel(pi_group_set.pi_groups[0].formula, fontsize=14)
-                st.pyplot(plt)
+                if st.checkbox('Set: ' + str(h+1) + ' Group: ' + str(i+1), value=True):
+                    st.pyplot(plt)
         my_bar.progress((h+1) / len(dimensional_analysis.pi_group_sets))
 
 
@@ -54,9 +59,20 @@ if option == 'CSV File':
         st.markdown(instructions)
 
     if file is not None:
+        available_markers = {'point': '.', 'circle': 'o', 'triangle': 'v', 'square': 's', 'pentagon': 'p', 'octagon': '8', 'star': '*', 'hexagon': 'h', 'x': 'x', 'diamond': 'd'}
         ds = pd.read_csv(file)
         st.sidebar.write("Here is the dataset used in this analysis:")
         st.sidebar.write(ds)
+        number = st.sidebar.text_input('Number of Markers', value=0, placeholder='0')
+        markers = []
+        for i in range(int(number)):
+            col1, col2 = st.sidebar.columns(2)
+            with col1:
+                first = int(st.text_input(f'Marker {i+1} Beginning', value=0, placeholder='first index'))
+            with col2:
+                last = int(st.text_input(f'Marker {i+1} End', value=0, placeholder='last index'))
+            marker_type = st.sidebar.selectbox(f'Marker {i+1}', available_markers, label_visibility='collapsed')
+            markers.append([first, last, available_markers[marker_type]])
 
         data = Data(ds, pandas=True)
         d = DimensionalAnalysis(data.parameters)
@@ -65,8 +81,8 @@ if option == 'CSV File':
         st.subheader('Generating Possible Figures')
         my_bar = st.progress(0)
         st.write('Different Sets of Repeating Variables')
-        generate_plots(d)
-        st.balloons()
+        generate_plots(d, markers)
+        # st.balloons()
 
 elif option == 'Images':
     image_files = st.sidebar.file_uploader('Image Uploader', type=['tif', 'png', 'jpg'], help='Upload .tif files to to test threshold values for Canny edge detection. Note multiple images can be uploaded but there is a 1 GB RAM limit and the application can begin to slow down if more than a couple hundred images are uploaded', accept_multiple_files=True)
@@ -97,5 +113,3 @@ elif option == 'Images':
 
 else:
     st.subheader('Use the side bar to select the type of data you would like to process.')
-
-
