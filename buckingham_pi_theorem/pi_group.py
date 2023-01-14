@@ -60,9 +60,10 @@ class PiGroup:
                         bottom += f'({parameter.name})'
                     else:
                         bottom += f'({parameter.name}^'+'{'+f'{-self.exponents[i-1]}'+'})'
-
-        self.formula = r'$\frac{t}{b}$'.replace('t', top).replace('b', bottom) if bottom else top
-        self.formula_inverse = f'{bottom} / {top}' if top else bottom
+        if top == '(b_!)':
+            print('Error: cannot use b_! as parameter name')
+        self.formula = r'$\frac{t}{b_!}$'.replace('t', top).replace('b_!', bottom) if bottom else top
+        self.formula_inverse = r'$\frac{b_!}{t}$'.replace('t', top).replace('b_!', bottom if bottom else '1')  # f'{bottom} / {top}' if top else bottom
 
 
 class PiGroupSet:
@@ -89,9 +90,10 @@ class PiGroupSet:
             self.pi_groups.append(pi_group)
 
     def plot(self):
-        figure, axis = plt.subplots(1, len(self.pi_groups))
+        figure, axis = plt.subplots(1, len(self.pi_groups)-1)
         for i, pi_group in enumerate(self.pi_groups[1:]):
             axis[i].scatter(pi_group.values, self.pi_groups[0].values)
+            axis[i].set_xlabel(pi_group.formula)
             axis[i].set_ylabel(self.pi_groups[0].formula)
         return figure, axis
 

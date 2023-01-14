@@ -11,20 +11,17 @@ from buckingham_pi_theorem.dimensional_matrix import DimensionalMatrix
 
 
 class DimensionalAnalysis:
-    def __init__(self, parameters, dependent_parameter=None):  # parameters should be of type ListOfParameter
+    def __init__(self, parameters, repeating_parameters=None):  # parameters should be of type ListOfParameter
         # TODO add logic to accept just a list of units list of parameters without values
         self.parameters = ListOfParameters(parameters)
-        self.dependent_parameter = dependent_parameter
         self.units_of_parameters = self.parameters.units
         self.independent_dimensions = self.units_of_parameters.independent_dimensions
         self.number_of_pi_groups = self.calculate_number_of_pi_groups()
         self.dimensional_matrix = DimensionalMatrix(self.units_of_parameters)
-        self.repeating_variables = self.find_repeating_variables()
+        self.repeating_variables = self.find_repeating_variables(acceptable_parameters=repeating_parameters)
         self.pi_groups = []
         self.pi_group_sets = [PiGroupSet(self.parameters, repeating_group) for repeating_group in self.repeating_variables]
-        # self.create_pi_groups()
         self.regression_model = self.generate_model(self.pi_group_sets[0])
-        # self.generate_model()
 
     def predict(self,):
         values = np.array([copy.deepcopy(pi_group.values) for pi_group in self.pi_groups[1:]])
@@ -41,9 +38,9 @@ class DimensionalAnalysis:
         r = len(self.independent_dimensions)
         return n - r
 
-    def find_repeating_variables(self):
+    def find_repeating_variables(self, acceptable_parameters=None):
         repeating_variables = []
-        combinations = Util.combinations(self.parameters, self.dimensional_matrix.rank)
+        combinations = Util.combinations(acceptable_parameters if acceptable_parameters is not None else self.parameters[1:], self.dimensional_matrix.rank)
         for group in combinations:
             M = DimensionalMatrix(group)
             if M.rank == self.dimensional_matrix.rank:
@@ -76,7 +73,7 @@ class DimensionalAnalysis:
             # axis[-1].plot(y1, y1, c='r')  # , label='predicted')
             # axis[-1].scatter(y1, y, s=10, c='b', marker="s")  # , label='measured')
             # axis[2, h].legend(loc='upper left')
-        return axis  # plt.show()
+        plt.show()
 
 
 if __name__ == '__main__':

@@ -86,6 +86,10 @@ class Util:
             factorial *= i
         return factorial
 
+    @staticmethod
+    def parse_equation(equation):
+        pass
+
 
 ########################################################################################################################
 

@@ -192,8 +192,8 @@ class Units:
     volume = L ** 3  # 1331
     work = M * L ** 2 / T ** 2  # 90.75
     g = L / T ** 2  # 2.75
-    Q = volume / T  # 665.5
-    A = area  # 121
+    # Q = volume / T  # 665.5
+    # A = area  # 121
 
     # Constants
     boltzmanns_constant = force * L / Temp
