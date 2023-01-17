@@ -20,7 +20,7 @@ def plot(pi_group, pi_group_set, markers, key, inverting):
     r_sq = model.score(x.reshape((-1, 1)), y)
     y_pred = model.predict(x.reshape((-1, 1)))
 
-    if st.checkbox(key + f' - Coefficient of Determination: {round(r_sq,2)}', value=r_sq > .7) or r_sq > .7:
+    if st.checkbox(key + f' - Coefficient of Determination: {round(r_sq,2)}', value=1) or r_sq > .7:
         if inverting:
             if st.checkbox('invert Y', value=False, key=key+'invert Y'):
                 y = 1 / pi_group_set.pi_groups[0].values
