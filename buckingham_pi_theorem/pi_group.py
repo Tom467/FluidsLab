@@ -18,7 +18,10 @@ class PiGroup:
         # TODO add some check to see if the Pi group is something common like the Reynold's Number
 
     def __str__(self):
-        return self.formula  # str(self.values) + ' ' + str(self.formula)
+        text = self.parameters[0].name
+        for i, param in enumerate(self.parameters[1:]):
+            text += '*' + param.name + str(self.exponents[i])
+        return text  # self.formula  # str(self.values) + ' ' + str(self.formula)
 
     def __eq__(self, other):
         return self.formula == other.formula or self.formula == other.formula_inverse
