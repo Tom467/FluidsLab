@@ -3,12 +3,13 @@ from units import Units, ListOfUnits
 
 
 class Parameter:
-    def __init__(self, value=None, units=Units.nondimensional, formula=None, name=''):
+    def __init__(self, value=None, units=Units.nondimensional, formula=None, name='', parent_parameters=None):
         # TODO use units to convert the value (example: if value=10 & units=cm, convert to value=0.01 & units=m)
         self.values = np.array(value, dtype=np.float64)
         self.units = units
         self.formula = formula
         self.name = name
+        self.parent_parameters = parent_parameters
 
     def __str__(self):
         return self.name + (f' {self.values}' if self.values is not None else '') + f' {self.units}' if self.units else ''

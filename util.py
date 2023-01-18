@@ -90,6 +90,13 @@ class Util:
     def parse_equation(equation):
         pass
 
+    @staticmethod
+    def list_to_string(list_object, newline=False):
+        str_object = str(list_object[0])
+        for ele in list_object[1:]:
+            str_object += ('\n' if newline else ', ') + str(ele)
+        return str_object
+
 
 ########################################################################################################################
 
