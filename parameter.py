@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from units import Units, ListOfUnits
 
@@ -7,8 +9,8 @@ class Parameter:
         # TODO use units to convert the value (example: if value=10 & units=cm, convert to value=0.01 & units=m)
         self.values = np.array(value, dtype=np.float64)
         self.units = units
-        self.formula = formula
         self.name = name
+        self.formula = formula
         self.parent_parameters = parent_parameters
 
     def __str__(self):
@@ -17,24 +19,24 @@ class Parameter:
     def __add__(self, other):
         if isinstance(other, ListOfParameters):
             return ListOfParameters(ListOfParameters([self]) + other)
-        return Parameter(value=(self.values + other.values), units=self.units)
+        return Parameter(value=(self.values + other.values), units=self.units, name=self.name+'+'+other.name)
 
     def __sub__(self, other):
-        return Parameter(value=(self.values - other.values), units=self.units)
+        return Parameter(value=(self.values - other.values), units=self.units, name=self.name+'-'+other.name)
 
     def __mul__(self, other):
         if isinstance(other, Parameter):
-            return Parameter(value=(self.values * other.values), units=(self.units * other.units))
+            return Parameter(value=(self.values * other.values), units=(self.units * other.units), name=self.name+'*'+other.name)
         return Parameter(value=(self.values * other), units=self.units)
 
     def __truediv__(self, other):
         if isinstance(other, Parameter):
             return Parameter(value=(self.values / other.values), units=(self.units / other.units))
-        return Parameter(value=(self.values / other), units=self.units)
+        return Parameter(value=(self.values / other), units=self.units, name=self.name+'/'+other.name)
 
     def __pow__(self, power, modulo=None):
         if self.values is not None:
-            return Parameter(value=(self.values ** power), units=(self.units ** power))
+            return Parameter(value=(self.values ** power), units=(self.units ** power), name=self.name+'^{'+str(power)+'}')
         else:
             return Parameter(units=(self.units ** power))
 
@@ -93,7 +95,7 @@ class Values:
 
 class ListOfParameters:
     # TODO make a generic class for custom lists and have ListOfParameters and ListOfUnits inherit from it
-    def __init__(self, list_of_parameters):  # items in list should be of type Parameters or Units
+    def __init__(self, list_of_parameters: list):  # items in list should be of type Parameters or Units
         # TODO make this a dictionary instead of a list
         self._list = [parameter if isinstance(parameter, Parameter) else Parameter(units=parameter) for parameter in list_of_parameters]
         self.names = [parameter.name for parameter in self]
@@ -113,7 +115,7 @@ class ListOfParameters:
 
     def __iter__(self):
         for elem in self._list:
-            yield elem  # TODO what does yield do?
+            yield elem
 
     def __eq__(self, other):
         if len(self) == len(other):
@@ -125,18 +127,33 @@ class ListOfParameters:
 
     def __add__(self, other):
         if isinstance(other, Parameter):
-            return ListOfParameters(other + ListOfParameters([self]))
-        # TODO find better naming
-        stuff = [parameter for parameter in self]
-        for elem in other:
-            stuff.append(elem)
-        return ListOfParameters(stuff)
+            temp = [param for param in self]
+            temp.append(other)
+            return ListOfParameters(temp)
+        elif isinstance(other, ListOfParameters):
+            temp = self._list + other._list
+            return ListOfParameters(temp)
+        elif isinstance(other, list):
+            temp = self._list + other
+            return ListOfParameters(temp)
+        return None
 
     def __sub__(self, other):
-        parameters = ListOfParameters(self)
-        for elem in other:
-            parameters.delete(elem)
-        return ListOfParameters(parameters)
+        if isinstance(other, Parameter):
+            temp = copy.deepcopy(self._list)
+            temp.remove(other)
+            return ListOfParameters(temp)
+        elif isinstance(other, ListOfParameters):
+            temp = copy.deepcopy(self._list)
+            for param in other:
+                temp.remove(param)
+            return ListOfParameters(temp)
+        elif isinstance(other, list):
+            temp = copy.deepcopy(self._list)
+            for param in other:
+                temp.remove(param)
+            return ListOfParameters(temp)
+        return None
 
     def calculate_units(self):
         self.units = ListOfUnits([parameter.units for parameter in self._list])
@@ -146,7 +163,7 @@ class ListOfParameters:
         units = []
         for unit in self.units:
             units += unit.independent_dimensions
-        self.independent_dimensions = list(dict.fromkeys(units))
+        self.independent_dimensions = {*self.units}
 
     def delete_duplicate_named_parameters(self):
         # TODO fix this function (it deletes all the parameters in the list that are the same, instead of leaving one)
@@ -197,10 +214,18 @@ class Common:
 
 
 if __name__ == "__main__":
-    print('Parameter() main script')
-    test = ListOfParameters([Units.velocity, Units.length])
-    test2 = [1, 2, 3]
-    test1 = [1, 2, 3.0]
-    print(test2 == test1)
+    print('Parameter main script')
+    d = Parameter(value=np.array([1, 1, 1]), units=Units.length, name='d')
+    t = Parameter(value=np.array([1, 1, 1]), units=Units.time, name='t')
+    v = Parameter(value=np.array([1, 1, 1]), units=Units.velocity, name='v')
+    h = Parameter(value=np.array([1, 1, 1]), units=Units.length, name='h')
+    A = Parameter(value=np.array([1, 1, 1]), units=Units.acceleration, name='A')
 
-    print(test.length)
+    u = Parameter(value=np.array([1, 1, 1]), units=Units.density, name='u')
+    U = Parameter(value=np.array([1, 1, 1]), units=Units.surface_tension, name='U')
+    y = Parameter(value=np.array([1, 1, 1]), units=Units.viscosity_dynamic, name='y')
+
+    problem = ListOfParameters([d, t, v])  # , h, A, u, U, y])
+    print('given', problem)
+    print('problem', problem - ListOfParameters([v, t]))
+    print('given', problem.independent_dimensions)

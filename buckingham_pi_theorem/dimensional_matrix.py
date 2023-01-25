@@ -7,6 +7,7 @@ class DimensionalMatrix:
         self.parameters = parameters if isinstance(parameters, ListOfParameters) else ListOfParameters(parameters)
         self.M = DimensionalMatrix.create_dimensional_matrix(self.parameters.units)
         self.rank = np.linalg.matrix_rank(self.M) if len(self.M) > 0 else 0
+        self.det = np.linalg.det(self.M) if self.M.shape[-2] == self.M.shape[-1] else None
 
     def __str__(self):
         return str(self.M)

@@ -8,6 +8,7 @@ from util import Util
 from data_reader import Data
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
+from streamlit_code.pi_group_builder import build_pi_group
 from general_dimensional_analysis.dimensional_analysis import DimensionalAnalysis
 
 
@@ -19,31 +20,43 @@ def process_csv_new(instructions):
         with st.sidebar.expander('Dataset Preview:'):
             st.write(ds)
         analysis = DimensionalAnalysis(Data(ds).parameters)
-        y_params, x_params = define_workspace(analysis)
+        option = st.sidebar.selectbox('Select Option', ['Pi Group Builder', 'Assign to Axis'])
+        if option == 'Pi Group Builder':
+            build_pi_group(analysis)
+        elif option == 'Assign to Axis':
+            define_axes_groups(analysis)
 
-        x_list, y_list = [], []
-        for param in y_params:
-            group = analysis.create_pi_groups(param)
-            [y_list.append(item) for item in group]
-        for param in x_params:
-            group = analysis.create_pi_groups(param)
-            [x_list.append(item) for item in group]
 
-        if st.checkbox('Show Pi Groups'):
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write('Y Axis')
-                for group in y_list:
-                    st.write(group.formula)
-            with col2:
-                st.write('X Axis')
-                for group in x_list:
-                    st.write(group.formula)
+def define_axes_groups(analysis):
+    y_params, x_params = define_workspace(analysis)
 
-        cutoff = st.slider('Linear Regression Filter', min_value=0, max_value=100, value=70) / 100
-        for i, y_param in enumerate(y_list):
-            for j, x_param in enumerate(x_list):
-                plot(x_param, y_param, str((i, j)), cutoff)
+    x_list, y_list = [], []
+    for param in y_params:
+        group = analysis.create_pi_groups(param)
+        [y_list.append(item) for item in group]
+    for param in x_params:
+        group = analysis.create_pi_groups(param)
+        [x_list.append(item) for item in group]
+
+    if st.checkbox('Show Pi Groups'):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.write('Y Axis')
+            for group in y_list:
+                st.write(group.formula)
+        with col2:
+            st.write('X Axis')
+            for group in x_list:
+                st.write(group.formula)
+        with col3:
+            st.write('Shared')
+            for group in x_list:
+                st.write(group.formula)
+
+    cutoff = st.slider('Linear Regression Filter', min_value=0, max_value=100, value=70) / 100
+    for i, y_param in enumerate(y_list):
+        for j, x_param in enumerate(x_list):
+            plot(x_param, y_param, str((i, j)), cutoff)
 
 
 

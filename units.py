@@ -107,6 +107,9 @@ class Unit:
         # TODO Check if unit system of self and other are the same
         return self.n / self.d == other.n / other.d
 
+    def __hash__(self):
+        return hash(self.n / self.d)
+
     def __ne__(self, other):
         # TODO Check if unit system of self and other are the same
         return self.n / self.d != other.n / other.d

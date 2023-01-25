@@ -97,6 +97,15 @@ class Util:
             str_object += ('\n' if newline else ', ') + str(ele)
         return str_object
 
+    @staticmethod
+    def list_in_list(a, b):
+        if len(a) == 0:
+            return False
+        for item in a:
+            if item not in b:
+                return False
+        return True
+
 
 ########################################################################################################################
 

@@ -29,7 +29,7 @@ class PiGroup:
     def _define_pi_group(self):
         M = DimensionalMatrix(self.parameters.units).M
         A, B = M[:, 1:], M[:, 0]
-        self.exponents = np.round(-(np.linalg.inv(A) @ B), 2)  # TODO rounding might cause problems with small fractions
+        self.exponents = -(np.linalg.inv(A) @ B)  # TODO rounding might cause problems with small fractions
         self.values = self.calculate_value(self.parameters)
         # TODO add logic to make sure x is a vector of integers if raising units to this power
 
@@ -41,8 +41,8 @@ class PiGroup:
         # TODO figure out what to return in addition to the total
 
     def contains(self, other_name):
-        for param in self.parameters:
-            if param.name == other_name:
+        for i, param in enumerate(self.parameters):
+            if param.name == other_name and self.exponents[i-1] != 0:
                 return True
         return False
 
@@ -57,12 +57,12 @@ class PiGroup:
                     if self.exponents[i-1] == 1:
                         top += f'({parameter.name})'
                     else:
-                        top += f'({parameter.name}^'+'{'+f'{self.exponents[i-1]}'+'})'
+                        top += f'({parameter.name})^'+'{'+f'{int(self.exponents[i-1]) if self.exponents[i-1] % 1 == 0 else self.exponents[i-1]}'+'}'
                 elif self.exponents[i-1] < 0:
                     if self.exponents[i-1] == -1:
                         bottom += f'({parameter.name})'
                     else:
-                        bottom += f'({parameter.name}^'+'{'+f'{-self.exponents[i-1]}'+'})'
+                        bottom += f'({parameter.name})^'+'{'+f'{-int(self.exponents[i-1]) if self.exponents[i-1] % 1 == 0 else -self.exponents[i-1]}'+'}'
         if top == '(b_!)':
             print('Error: cannot use b_! as parameter name')
         self.formula = r'$\frac{t}{b_!}$'.replace('t', top).replace('b_!', bottom) if bottom else top

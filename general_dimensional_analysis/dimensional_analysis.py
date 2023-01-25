@@ -1,7 +1,9 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 from util import Util
 from units import Units
+from data_reader import Data
 from itertools import combinations
 from parameter import ListOfParameters, Parameter
 from buckingham_pi_theorem.pi_group import PiGroup
@@ -9,15 +11,22 @@ from buckingham_pi_theorem.dimensional_matrix import DimensionalMatrix
 
 
 class DimensionalAnalysis:
-    def __init__(self, parameters):
+    def __init__(self, parameters: ListOfParameters):
         self.parameters = ListOfParameters(parameters)
+        self.dimensional_matrix = DimensionalMatrix(self.parameters)
         self.repeating_variables = self.find_repeating_variables(parameters)
+
+    def __iter__(self):
+        for elem in self.parameters:
+            yield elem
+
+    def __add__(self, other: Parameter):
+        return DimensionalAnalysis(self.parameters + other)
 
     @staticmethod
     def find_repeating_variables(parameters):
         repeating_variables = []
         dimensional_matrix = DimensionalMatrix(parameters)
-        # combinations = Util.combinations
         for group in combinations(parameters, dimensional_matrix.rank):
             M = DimensionalMatrix(group)
             if M.rank == dimensional_matrix.rank:
@@ -33,6 +42,13 @@ class DimensionalAnalysis:
                     pi_groups.append(pi_group)
         return pi_groups
 
+    @staticmethod
+    def plot(x, y):
+        plt.scatter(x.values, y.values)
+        plt.xlabel(r'$a$'.replace('a', x.name) if isinstance(x, Parameter) else x.formula)
+        plt.ylabel(r'$a$'.replace('a', y.name) if isinstance(y, Parameter) else y.formula)
+        plt.show()
+
 
 if __name__ == '__main__':
 
@@ -46,18 +62,14 @@ if __name__ == '__main__':
     U = Parameter(value=np.array([1, 1, 1]), units=Units.surface_tension, name='U')
     y = Parameter(value=np.array([1, 1, 1]), units=Units.viscosity_dynamic, name='y')
 
-    problem = ListOfParameters([d, t, v, h, A, u, U, y])
-    solution = DimensionalAnalysis(problem)
-    A_pi_groups = solution.create_pi_groups(A)
-    print(len(A_pi_groups))
-    print(Util.list_to_string(A_pi_groups, newline=True))
+    problem = ListOfParameters([d, t, v])  # , h, A, u, U, y])
+    print('given', problem)
+    print('problem', problem + u)
+    solution = DimensionalAnalysis(problem - v + y)
+    print(solution.dimensional_matrix)
 
+    # print('plotting')
+    # experiment = Data("C:/Users/truma/Downloads/testdata3.csv")
+    # analysis = DimensionalAnalysis(experiment.parameters)
+    # DimensionalAnalysis.plot(experiment.parameters[0]**2, analysis.create_pi_groups(analyis.parameters[4]*experiment.parameters[1])[0])
 
-    # print(DimensionalMatrix([u, U, y]))
-    # print(y.units, U.units)
-    # test = DimensionalMatrix([d, v, U, u])
-    # print(test)
-    # a, b = test[:, 1:], test[:, 0]
-    # print(a, b)
-    # print(np.linalg.solve(a,b))
-    # density, surface_tension, gravity, viscosity (kinematic/dynamic),
