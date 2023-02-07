@@ -20,19 +20,7 @@ def sandbox_chart():
     if file is not None:
         ds = pd.read_csv(file)
         group = Data(ds).parameters
-        tab1, tab2, tab3 = st.tabs(["Basic Analysis", "Pi Group Builder", "Saved Plots"])
-
-        if 'Saved_plots' not in st.session_state:
-            st.session_state.saved_plots = [(1,1)]
-        # with tab1:
-        #     for i, (x, y) in enumerate(combinations([group[parameter] for parameter in group.parameters], 2)):
-        #         st.write((x, y))
-        #         plot(x, y, key=x.name+y.name+str(i))
-        with tab2:
-            create_pi_groups(group)
-        with tab3:
-            st.subheader('Test')
-            saved_plots()
+        create_pi_groups(group)
 
 
 def create_pi_groups(group):
@@ -43,7 +31,6 @@ def create_pi_groups(group):
         key = 'x_axis'
         cols = st.sidebar.columns(len(group.parameters))
         if key not in st.session_state:
-            st.write(len(group.parameters))
             st.session_state[key] = np.zeros(len(group.parameters), dtype=int)
         for i, param in enumerate(group):
             with cols[i]:

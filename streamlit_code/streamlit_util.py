@@ -19,17 +19,14 @@ def plotting_options(x, y, key):
             y = y ** -1
         if st.checkbox('Invert X', key='x'+y.name+x.name+key):
             x = x ** -1
-        if st.button('Save Plot', key=x.name+y.name+key):
-            st.write('first')
-            st.write(st.session_state.saved_plots)
-            add_to_saved_plots((x, y))
-            st.write('Second')
-            st.write(st.session_state.saved_plots)
     return x, y
 
 
-def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key=''):
-    x_parameter, y_parameter = plotting_options(x_parameter, y_parameter, key)
+def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key='', collapse=False, highlight=0):
+    if collapse:
+        pass
+    else:
+        x_parameter, y_parameter = plotting_options(x_parameter, y_parameter, key)
     legend = []
     plt.figure()
 
@@ -55,9 +52,11 @@ def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key=''):
         else:
             r_sq = poly_r_sq
             y_pred = poly_model.predict(poly.fit_transform(x_pred.reshape(-1, 1)))
-
-        if st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}', value=r_sq >= cutoff, key=y_parameter.name+x_parameter.name+key):
+        if collapse and r_sq <= cutoff:
+            pass
+        elif st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}', value=r_sq >= cutoff, key=y_parameter.name+'vs'+x_parameter.name+key):
             plt.scatter(x, y)
+            plt.scatter(x[highlight], y[highlight], marker='*')
             plt.plot(x_pred, y_pred, color='purple')
             legend.append('Linear Fit')
             plt.xlabel(x_label, fontsize=14)
@@ -76,8 +75,5 @@ def add_to_saved_plots(item):
     temp_list = []
     if st.session_state.saved_plots:
         temp_list = copy.deepcopy(st.session_state.saved_plots)
-        print('present')
-        print(temp_list)
     temp_list.append(item)
-    print(temp_list)
     st.session_state.saved_plots = temp_list

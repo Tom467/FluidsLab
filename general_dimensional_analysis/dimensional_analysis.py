@@ -1,12 +1,9 @@
+
 import copy
 import numpy as np
-import sympy as sp
-import matplotlib.pyplot as plt
 
-from itertools import product, combinations_with_replacement
-from general_dimensional_analysis.util import Util
-from general_dimensional_analysis.unit import Unit
 from general_dimensional_analysis.parameter import Parameter
+from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 
@@ -73,51 +70,18 @@ def explore_paths(group: GroupOfParameters) -> list:
         pi_group_formulas.append(formula)
     return pi_group_formulas
 
-    # combos = combinations_with_replacement(group, limit)
-    #
-    # pi_groups = []
-    # for param_list in combos:
-    #     new_group = GroupOfParameters([group[param_name] for param_name in param_list])
-    #     options = []
-    #     first = True
-    #     for param in new_group:
-    #         exp = param_list.count(param)
-    #         if first:
-    #             options.append([{group[param]: exp}])
-    #             first = False
-    #         else:
-    #             options.append([{group[param]: exp}, {group[param]: 0}, {group[param]: -exp}])
-    #
-    #     combos = product(*options)
-    #     for combo in combos:
-    #         a = combo
-    #         b = {}
-    #         for i in a:
-    #             b |= i
-    #         new_parameter = Parameter.create_from_formula(b)
-    #         if new_parameter.units == Unit(1) and new_parameter not in pi_groups:
-    #             pi_groups.append(new_parameter)
-    # return pi_groups
-
 
 if __name__ == '__main__':
-    m, l, t = Unit(5), Unit(3), Unit(2)
+    experiment = Data("C:/Users/truma/Downloads/FormattedData.csv")
+    group = experiment.parameters
+    R = group['R']
+    M = group['M']
+    Span = group['Span']
+    Area = group['Area']
+    Angle = group['Angle']
+    Chord = group['Chord']
+    Descent = group['Descent']
+    Rotational = group['Rotational']
 
-    a = np.array([np.random.rand()] * 19)
-    M = Parameter('M', m, a)
-    A = Parameter('Area', l ** 2, a)
-    Chord = Parameter('Chord', l, a)
-    Span = Parameter('Span', l, a)
-    Descent = Parameter('Descent', l / t, a)
-    Rotational = Parameter('Rotational', t ** -1, a)
-    Angle = Parameter('Angle', Unit(1), a)
-    R = Parameter('R', l, a)
-    g = Parameter('g', l / t ** 2, a)
-    Density = Parameter('Density', m / l ** 3, a)
-
-    parameter_group = GroupOfParameters([Chord, Span, Descent, Rotational, M, A, R, Angle, g, Density])
-    include_to_parameters = [Span, Density]
-    limit_stop = 4
-
-    generated_pi_groups = explore_paths(parameter_group)
+    print(Angle.values)
 

@@ -5,8 +5,6 @@ from general_dimensional_analysis.unit import Units
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
-# from buckingham_pi_theorem.dimensional_analysis import DimensionalAnalysis
-
 
 class Data:
     def __init__(self, file):

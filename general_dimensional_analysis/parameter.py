@@ -37,7 +37,6 @@ class Parameter:
                 name += f'({param.name}^{formula[param]})'  # if formula[param] != 1 else f'({param.name})'
                 units *= param.units ** formula[param]
                 values *= param.values ** formula[param]
-                values *= param.values ** formula[param]
                 new_formula |= {param: formula[param]}
         return Parameter(name=name, units=units, values=values, formula=new_formula)
 
