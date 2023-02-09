@@ -33,7 +33,7 @@ class FluidType:
         abbreviations = kwargs.pop('abbreviations')
         parameter_list = []
         for key, value in kwargs.items():
-            parameter_list.append(Parameter(f'{abbreviations[key]}', Units.__getattribute__(Units, key), value))
+            parameter_list.append(Parameter(f'\\{abbreviations[key]}', Units.__getattribute__(Units, key), value))
         return FluidType(name, parameter_list)
 
 
@@ -52,9 +52,10 @@ fluid_types = {
 
 }
 
-common_constants = {
-    'g': Parameter('g', Units.acceleration, np.array([9.81]))
-}
+common_constants = GroupOfParameters([
+    Parameter('g', Units.acceleration, np.array([9.81]))
+])
+
 if __name__ == '__main__':
     water = fluid_types['water']
     print(water, '\n')

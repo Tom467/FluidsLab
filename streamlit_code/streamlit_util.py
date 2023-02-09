@@ -83,6 +83,7 @@ def add_to_saved_plots(item):
 
 def add_constants(group):
     other_parameters = GroupOfParameters([])
+    selected_constants = GroupOfParameters([])
     with st.sidebar.expander('Add to data'):
         options = list(fluid_types)
         options.insert(0, '')
@@ -90,10 +91,9 @@ def add_constants(group):
         if selected:
             other_parameters = fluid_types[selected].parameters
 
-        constants = common_constants
+        constants = common_constants + other_parameters
         for constant in constants:
-            if st.checkbox(constant, key=constant+'constant'):
-                other_parameters += GroupOfParameters([constants[constant]])
-        # st.write(other_parameters)
-        other = other_parameters
-    return group + other if other_parameters else group
+            constant_name = constant.replace('\\', '')
+            if st.checkbox(f"{constant_name}: {constants[constant].values[0]}", key=constant+'constant'):
+                selected_constants += GroupOfParameters([constants[constant]])
+    return group + selected_constants

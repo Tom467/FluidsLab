@@ -15,21 +15,13 @@ from streamlit_code.pi_group_regression import combine_pi_groups
 from general_dimensional_analysis.data_reader import Data
 
 
-st.set_page_config(page_title="Data Processor")
-
-
-def csv_uploader():
-    file = st.sidebar.file_uploader('CSV file', type=['csv'])
-    group = None
-    if file is not None:
-        ds = pd.read_csv(file)
-        group = Data(ds).parameters
-    return group
+st.set_page_config(page_title="Data Processor", layout="wide")
 
 
 @st.cache
 def read_markdown_file(markdown_file):
     return Path(markdown_file).read_text()
+
 
 def image_options(files):
     st.subheader('Edges Detection and Contour Tracking')

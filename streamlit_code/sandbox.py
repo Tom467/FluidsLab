@@ -33,7 +33,7 @@ def create_pi_groups(group):
                     st.session_state[key][i] += 1
                 if st.button('-1', key=param + 'Previous' + key):
                     st.session_state[key][i] -= 1
-                name = param if param[0] == "\\" or (len(param) > 1 and '_' in param) else param[0]
+                name = param if param[0] == "\\" or (len(param) < 2) else param[0]
                 st.write(f'${name}:$')
                 st.write(f'${st.session_state[key][i]}$')
         dimensioned_x = Parameter.create_from_formula({group[param]: int(st.session_state[key][i]) for i, param in enumerate(group)})
@@ -57,7 +57,7 @@ def create_pi_groups(group):
                     st.session_state[key][i] += 1
                 if st.button('-1', key=param + 'Previous' + key):
                     st.session_state[key][i] -= 1
-                name = param if param[0] == "\\" or (len(param) > 1 and '_' in param) else param[0]
+                name = param if param[0] == "\\" or (len(param) < 2) else param[0]
                 st.write(f'${name}:$')
                 st.write(f'${st.session_state[key][i]}$')
         dimensioned_y = Parameter.create_from_formula({group[param]: int(st.session_state[key][i]) for i, param in enumerate(group)})
