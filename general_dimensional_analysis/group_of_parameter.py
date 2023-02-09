@@ -8,7 +8,6 @@ class GroupOfParameters:
     def __init__(self, parameters: list) -> None:
         self.parameters = {parameter.name: parameter for parameter in parameters}
         self.dimensional_matrix = self._define_dimensional_matrix()
-        # self.null_matrix = sp.Matrix([row.T for row in self.dimensional_matrix.nullspace()])
 
     def __repr__(self) -> str:
         text = tuple(parameter for parameter in self.parameters)
@@ -26,6 +25,12 @@ class GroupOfParameters:
         for parameter_name in self:
             if self[parameter_name] not in other:
                 new.append(self[parameter_name])
+        return GroupOfParameters(new)
+
+    def __add__(self, other):
+        new = [self[parameter] for parameter in self]
+        for parameter in other:
+            new.append(other[parameter])
         return GroupOfParameters(new)
 
     def _define_dimensional_matrix(self) -> sp.Matrix:

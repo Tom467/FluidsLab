@@ -24,8 +24,8 @@ def generate_plots(dimensional_analysis, markers, my_bar, inverting, hide_plot):
         my_bar.progress((h+1) / len(dimensional_analysis.pi_group_sets))
 
 
-def process_csv(instructions):
-    file = st.sidebar.file_uploader('CSV file', type=['csv'], help=instructions)
+def process_csv():
+    file = st.sidebar.file_uploader('CSV file', type=['csv'])
 
     if file is not None:
         ds = pd.read_csv(file)

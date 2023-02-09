@@ -1,34 +1,52 @@
 
 import numpy as np
 import pandas as pd
-from general_dimensional_analysis.unit import Units
+from general_dimensional_analysis.unit import unit_parser
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 
 class Data:
-    def __init__(self, file):
-        self.file_location = '' if isinstance(file, pd.core.frame.DataFrame) else file
-        self.data = file if isinstance(file, pd.core.frame.DataFrame) else self.read_file(self.file_location)
-        self.parameters = self.generate_list_of_parameters()
-
     @staticmethod
     def read_file(file_location):
-        data = pd.read_csv(file_location)
-        return data
+        dataframe = pd.read_csv(file_location, header=[0, 1])
+        return dataframe
 
-    def generate_list_of_parameters(self):
-        # TODO add the ability to convert to standard units (i.e. mm to m) using Convert and ConvertTemperature
+    @staticmethod
+    def csv_to_group(file_location: str) -> GroupOfParameters:
+        return Data.dataframe_to_group(pd.read_csv(file_location, header=[0, 1]))
+
+    @staticmethod
+    def group_to_dataframe(group: GroupOfParameters) -> pd.DataFrame:
+        headers, units, data = [], [], []
+        for param in group:
+            headers.append(param)
+            units.append(str(group[param].units))
+            data.append(group[param].values)
+        dataframe = pd.DataFrame(data=np.array(data).T, columns=[headers, units])
+        return dataframe
+
+    @staticmethod
+    def group_to_dataframe_without_units(group: GroupOfParameters) -> pd.DataFrame:
+        headers, data = [], []
+        for param in group:
+            headers.append(param)
+            data.append(group[param].values)
+        dataframe = pd.DataFrame(data=np.array(data).T, columns=headers)
+        return dataframe
+
+    @staticmethod
+    def dataframe_to_group(dataframe: pd.DataFrame) -> GroupOfParameters:
         parameters = []
-        for key in self.data:
-            parameters.append(Parameter(values=np.array([value for value in self.data[key]]).astype(np.float64),
-                                        units=getattr(Units(), key.split('-')[1]),
-                                        name=key.split('-')[0]))
+        for param in dataframe:
+            scale_factor, units = unit_parser(param[1])
+            parameters.append(Parameter(param[0], units, dataframe[param].to_numpy()*scale_factor))
         return GroupOfParameters(parameters)
 
 
 if __name__ == "__main__":
-    experiment = Data("C:/Users/truma/Downloads/testdata3.csv")
-    print(experiment.parameters)
-    # d = DimensionalAnalysis(experiment.parameters[2:7], repeating_parameters=experiment.parameters[2:4])
-    # d.plot()
+
+    experiment_as_group = Data.csv_to_group("C:/Users/truma/Downloads/testdata3.csv")
+    print(*experiment_as_group)
+    experiment_as_dataframe = Data.group_to_dataframe(experiment_as_group)
+    print(experiment_as_dataframe)

@@ -20,7 +20,9 @@ def combine_pi_groups(group):
     highlight = st.sidebar.number_input('Highlight Data Point', min_value=0)
 
     weights = np.ones(pi_group_list[0].shape)
+    st.sidebar.subheader('Select variables that can be shared between axes:')
     for i, param in enumerate(group):
+        print(param)
         if st.sidebar.checkbox(param):
             weights[i] = 0
 
@@ -39,9 +41,10 @@ def generate_pi_groups(matrix, arr=(0, 1, -1, 2, -2)):
     pi_group_list = []
     for combo in product(np.array(arr), repeat=matrix.shape[1]):
         node = np.array(combo)
-        if (matrix @ node == np.zeros(matrix.shape[0])).all() and not (node == np.zeros(matrix.shape[1])).all():
+        if (matrix @ node == np.zeros(matrix.shape[0])).all():  # and not (node == np.zeros(matrix.shape[1])).all():
             pi_group_list.append(node)
     return pi_group_list
+
 
 def compare_deviation(pi_groups, group):
     min = [.3]*4

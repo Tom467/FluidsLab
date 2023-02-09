@@ -10,6 +10,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
+from general_dimensional_analysis.fluid_types import fluid_types, common_constants
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 
@@ -22,7 +23,7 @@ def plotting_options(x, y, key):
     return x, y
 
 
-def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key='', collapse=False, highlight=0):
+def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key='', collapse=False, highlight=None):
     if collapse:
         pass
     else:
@@ -56,7 +57,8 @@ def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key='', colla
             pass
         elif st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}', value=r_sq >= cutoff, key=y_parameter.name+'vs'+x_parameter.name+key):
             plt.scatter(x, y)
-            plt.scatter(x[highlight], y[highlight], marker='*')
+            if highlight is not None:
+                plt.scatter(x[highlight], y[highlight], marker='*')
             plt.plot(x_pred, y_pred, color='purple')
             legend.append('Linear Fit')
             plt.xlabel(x_label, fontsize=14)
@@ -77,3 +79,21 @@ def add_to_saved_plots(item):
         temp_list = copy.deepcopy(st.session_state.saved_plots)
     temp_list.append(item)
     st.session_state.saved_plots = temp_list
+
+
+def add_constants(group):
+    other_parameters = GroupOfParameters([])
+    with st.sidebar.expander('Add to data'):
+        options = list(fluid_types)
+        options.insert(0, '')
+        selected = st.selectbox('Add fluid type', options)
+        if selected:
+            other_parameters = fluid_types[selected].parameters
+
+        constants = common_constants
+        for constant in constants:
+            if st.checkbox(constant, key=constant+'constant'):
+                other_parameters += GroupOfParameters([constants[constant]])
+        # st.write(other_parameters)
+        other = other_parameters
+    return group + other if other_parameters else group

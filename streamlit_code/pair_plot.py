@@ -1,15 +1,13 @@
 
-import copy
-import numpy as np
-import pandas as pd
+import seaborn as sns
 import streamlit as st
 
-import seaborn as sns
+from general_dimensional_analysis.data_reader import Data
 
 
-def pairplot():
-    file = st.sidebar.file_uploader('CSV file', type=['csv'])
-
-    if file is not None:
-        ds = pd.read_csv(file)
-        st.pyplot(sns.pairplot(ds))
+def pairplot(group):
+    df = Data.group_to_dataframe_without_units(group)
+    options = list(df.columns)
+    options.insert(0, None)
+    selected = st.sidebar.selectbox('Variable in data to map plot aspects to different colors', options)
+    st.pyplot(sns.pairplot(df, hue=selected))

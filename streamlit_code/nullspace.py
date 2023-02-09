@@ -14,23 +14,18 @@ from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 from general_dimensional_analysis.dimensional_analysis import explore_paths, best_pi_groups
 
 
-def explore_nullspace():
-    file = st.sidebar.file_uploader('CSV file', type=['csv'])
+def explore_nullspace(parameter_group):
+    y_include, x_include, shared = define_workspace(parameter_group)
 
-    if file is not None:
-        ds = pd.read_csv(file)
-        parameter_group = Data(ds).parameters
-        y_include, x_include, shared = define_workspace(parameter_group)
+    # st.write(parameter_group)
+    pi_group_formulas = get_formulas(parameter_group)
 
-        # st.write(parameter_group)
-        pi_group_formulas = get_formulas(parameter_group)
+    y_pi_groups = best_pi_groups(parameter_group, pi_group_formulas, y_include+shared, exclude=x_include)
+    x_pi_groups = best_pi_groups(parameter_group, pi_group_formulas, x_include+shared, exclude=y_include)
+    x, y = pi_group_selector(y_pi_groups, x_pi_groups)
 
-        y_pi_groups = best_pi_groups(parameter_group, pi_group_formulas, y_include+shared, exclude=x_include)
-        x_pi_groups = best_pi_groups(parameter_group, pi_group_formulas, x_include+shared, exclude=y_include)
-        x, y = pi_group_selector(y_pi_groups, x_pi_groups)
-
-        for combo in product(x, y):
-            plot(combo[0], combo[1], key=combo[0].name+combo[1].name)
+    for combo in product(x, y):
+        plot(combo[0], combo[1], key=combo[0].name+combo[1].name)
 
 
 def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key=''):
