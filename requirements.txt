@@ -4,5 +4,5 @@ streamlit
 matplotlib
 pandas
 scikit-learn
-opencv-python-headless
+opencv-python
 seaborn

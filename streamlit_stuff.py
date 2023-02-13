@@ -1,16 +1,13 @@
 
-import pandas as pd
 import streamlit as st
 
 from pathlib import Path
-from itertools import combinations
 from streamlit_code.sandbox import sandbox_chart
 from streamlit_code.pair_plot import pairplot
 from streamlit_code.nullspace import explore_nullspace
 from streamlit_code.csv_processor import process_csv
 from streamlit_code.streamlit_util import add_constants
 from streamlit_code.image_processor import process_image
-from streamlit_code.csv_processor_new import process_csv_new
 from streamlit_code.pi_group_regression import combine_pi_groups
 from general_dimensional_analysis.data_reader import Data
 
@@ -39,11 +36,11 @@ def csv_options(file):
     group = Data.csv_to_group(file)
     supplemental_group = add_constants(group)
     option = st.sidebar.selectbox('Select the type of data to be processed', ('Select an Option',
-                                                                              'Buckingham Pi',
-                                                                              'Nullspace',
+                                                                              'Pair Plot',
                                                                               'Sandbox',
-                                                                              'Combine Pi Groups',
-                                                                              'Pair Plot'))
+                                                                              'Nullspace',
+                                                                              'Auto Exploration',
+                                                                              'Buckingham Pi'))
     if option == 'Buckingham Pi':
         process_csv()
 
@@ -53,7 +50,7 @@ def csv_options(file):
     elif option == 'Sandbox':
         sandbox_chart(supplemental_group)
 
-    elif option == 'Combine Pi Groups':
+    elif option == 'Auto Exploration':
         combine_pi_groups(supplemental_group)
 
     elif option == 'Pair Plot':

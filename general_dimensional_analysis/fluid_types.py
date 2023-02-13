@@ -17,7 +17,6 @@ english_to_greek = {
 
 class FluidType:
     def __init__(self, name, parameters):
-
         self.name = name
         self.parameters = GroupOfParameters([Parameter(parameter.name, parameter.units, np.array([parameter.values], dtype=np.float64)) for parameter in parameters])
 

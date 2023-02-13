@@ -23,28 +23,20 @@ def create_pi_groups(group):
         x_axis, y_axis = [], []
 
         st.sidebar.header('X Axis')
-        key = 'x_axis'
+        x_key = 'x_axis'
         cols = st.sidebar.columns(len(group.parameters))
-        if key not in st.session_state or len(st.session_state[key]) != len(group.parameters):
-            st.session_state[key] = np.zeros(len(group.parameters), dtype=int)
+        if x_key not in st.session_state or len(st.session_state[x_key]) != len(group.parameters):
+            st.session_state[x_key] = np.zeros(len(group.parameters), dtype=int)
         for i, param in enumerate(group):
             with cols[i]:
-                if st.button('+1', key=param + 'Next' + key):
-                    st.session_state[key][i] += 1
-                if st.button('-1', key=param + 'Previous' + key):
-                    st.session_state[key][i] -= 1
+                if st.button('+1', key=param + 'Next' + x_key):
+                    st.session_state[x_key][i] += 1
+                if st.button('-1', key=param + 'Previous' + x_key):
+                    st.session_state[x_key][i] -= 1
                 name = param if param[0] == "\\" or (len(param) < 2) else param[0]
                 st.write(f'${name}:$')
-                st.write(f'${st.session_state[key][i]}$')
-        dimensioned_x = Parameter.create_from_formula({group[param]: int(st.session_state[key][i]) for i, param in enumerate(group)})
-        length = 4
-        x_nearest = find_nearest_pi_group(group, st.session_state[key], return_item_length=length)
-        cols = st.sidebar.columns(2)
-        for i, param in enumerate(x_nearest):
-            with cols[i % 2]:
-                if st.checkbox(x_nearest[i].get_markdown()):
-                    x_axis.append(x_nearest[i])
-                st.write(x_nearest[i].get_markdown())
+                st.write(f'${st.session_state[x_key][i]}$')
+        dimensioned_x = Parameter.create_from_formula({group[param]: int(st.session_state[x_key][i]) for i, param in enumerate(group)})
 
         st.sidebar.header('Y Axis')
         key = 'y_axis'
@@ -61,8 +53,24 @@ def create_pi_groups(group):
                 st.write(f'${name}:$')
                 st.write(f'${st.session_state[key][i]}$')
         dimensioned_y = Parameter.create_from_formula({group[param]: int(st.session_state[key][i]) for i, param in enumerate(group)})
+
+        plot(dimensioned_x, dimensioned_y)
+
         length = 4
-        y_nearest = find_nearest_pi_group(group, st.session_state[key], return_item_length=length)
+        x_limit = st.sidebar.number_input('X search limit', min_value=1000, value=2000, step=500)
+        x_nearest = find_nearest_pi_group(group, st.session_state[x_key], return_item_length=length, limit=x_limit)
+        # st.write(st.)
+        cols = st.sidebar.columns(2)
+        for i, param in enumerate(x_nearest):
+            with cols[i % 2]:
+                if st.checkbox(x_nearest[i].get_markdown()):
+                    x_axis.append(x_nearest[i])
+                st.write(x_nearest[i].get_markdown())
+
+        length = 4
+        y_limit = st.sidebar.number_input('Y search limit', min_value=1000, value=2000, step=500)
+        y_nearest = find_nearest_pi_group(group, st.session_state[key], return_item_length=length, limit=y_limit)
+
         cols = st.sidebar.columns(2)
         for i, param in enumerate(y_nearest):
             with cols[i % 2]:
@@ -71,18 +79,18 @@ def create_pi_groups(group):
                 st.write(y_nearest[i].get_markdown())
 
         # cutoff = st.slider('Linear Regression Filter', min_value=0, max_value=100, value=0) / 100
-        plot(dimensioned_x, dimensioned_y)
         for x, y in product(x_axis, y_axis):
             if x.name and y.name and x.name != y.name:
                 plot(x, y, key=x.name+y.name)
 
 
-def find_nearest_pi_group(group, arr, return_item_length=5):
+@st.cache
+def find_nearest_pi_group(group, arr, return_item_length=5, limit=2000):
     matrix = group.dimensional_matrix
     nodes = [arr]
     nearest_pi_groups = []
     counter = 0
-    while nodes and len(nearest_pi_groups) < return_item_length and counter < 10000:
+    while nodes and len(nearest_pi_groups) < return_item_length and counter < limit:
         node = nodes.pop(0)
 
         for i, param in enumerate(node):
