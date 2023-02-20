@@ -8,21 +8,19 @@ import matplotlib.pyplot as plt
 from itertools import product, combinations
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-from streamlit_code.streamlit_util import plot, saved_plots
 from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 
-def combine_pi_groups(group):
-    pi_group_list = generate_pi_groups(group.dimensional_matrix, arr=(0, 1, -1, 2, -2))
-    st.sidebar.subheader(f'Number of Pi Groups found: {len(pi_group_list)}')
-    highlight = st.sidebar.number_input('Highlight Data Point', min_value=0)
+def explore_pi_groups(full_group, plotter):
+    group = parameter_selector(full_group)
+    pi_group_list = generate_pi_groups([parameter for parameter in group], group, arr=(0, 1, -1, 2, -2, 3))
+    st.sidebar.write(f'Number of Pi Groups found: {len(pi_group_list)}')
 
     weights = np.ones(pi_group_list[0].shape)
     st.sidebar.subheader('Select variables that can be shared between axes:')
     for i, param in enumerate(group):
-        print(param)
         if st.sidebar.checkbox(param):
             weights[i] = 0
 
@@ -31,13 +29,12 @@ def combine_pi_groups(group):
         if score <= 0:
             x = Parameter.create_from_formula({group[param]: int(x[i]) for i, param in enumerate(group)})
             y = Parameter.create_from_formula({group[param]: int(y[i]) for i, param in enumerate(group)})
-            plot(x, y, cutoff=.7, collapse=True, highlight=highlight)
-            # if r_sq:
-            #     print(r_sq)
+            plotter.plot(x, y)
 
 
-@st.cache
-def generate_pi_groups(matrix, arr=(0, 1, -1, 2, -2)):
+@st.cache_data
+def generate_pi_groups(parameters, _group, arr=(0, 1, -1, 2, -2)):
+    matrix = GroupOfParameters([_group[parameter] for parameter in parameters]).dimensional_matrix
     pi_group_list = []
     for combo in product(np.array(arr), repeat=matrix.shape[1]):
         node = np.array(combo)
@@ -61,3 +58,13 @@ def compare_deviation(pi_groups, group):
     # st.write(f'Max std: {max(std)}')
     st.write(f'Min std: {np.round(min, 2)}')
     st.write(min_param)
+
+
+def parameter_selector(full_group: GroupOfParameters) -> GroupOfParameters:
+    include_parameters = []
+    st.sidebar.subheader('Select variables to include in exploration:')
+    for parameter in full_group:
+        if st.sidebar.checkbox(parameter, key='selector'+parameter) and len(include_parameters) < 7:
+            include_parameters.append(full_group[parameter])
+    return GroupOfParameters(include_parameters)
+

@@ -39,7 +39,7 @@ class Parameter:
                 values *= param.values ** formula[param]
                 new_formula |= {param: formula[param]}
         return Parameter(name=name, units=units, values=values, formula=new_formula)
-    #
+
     def __repr__(self) -> str:
         return 'Parameter: ' + self.name
 

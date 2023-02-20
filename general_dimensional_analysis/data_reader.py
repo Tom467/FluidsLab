@@ -8,13 +8,14 @@ from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 class Data:
     @staticmethod
-    def read_file(file_location):
+    def csv_to_dataframe(file_location):
         dataframe = pd.read_csv(file_location, header=[0, 1])
         return dataframe
 
     @staticmethod
-    def csv_to_group(file_location: str) -> GroupOfParameters:
-        return Data.dataframe_to_group(pd.read_csv(file_location, header=[0, 1]))
+    def csv_to_group(file_location: str) -> (GroupOfParameters, list):
+        dataframe = pd.read_csv(file_location, header=[0, 1])
+        return Data.dataframe_to_group(dataframe)
 
     @staticmethod
     def group_to_dataframe(group: GroupOfParameters) -> pd.DataFrame:
@@ -36,12 +37,18 @@ class Data:
         return dataframe
 
     @staticmethod
-    def dataframe_to_group(dataframe: pd.DataFrame) -> GroupOfParameters:
+    def dataframe_to_group(dataframe: pd.DataFrame) -> [GroupOfParameters, list]:
         parameters = []
-        for param in dataframe:
-            scale_factor, units = unit_parser(param[1])
-            parameters.append(Parameter(param[0], units, dataframe[param].to_numpy()*scale_factor))
-        return GroupOfParameters(parameters)
+        label = []
+        for col in dataframe:
+            if col[0] == 'Label':
+                label = dataframe[col].values.tolist()
+                dataframe = dataframe.drop(columns=[col])
+                break
+        for col in dataframe:
+            scale_factor, units = unit_parser(col[1])
+            parameters.append(Parameter(col[0], units, dataframe[col].to_numpy()*scale_factor))
+        return GroupOfParameters(parameters), label
 
 
 if __name__ == "__main__":

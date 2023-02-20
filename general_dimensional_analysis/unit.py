@@ -40,12 +40,12 @@ class Unit:
 
     def __add__(self, other):
         if self != other:
-            warnings.warn('Adding units that do not match', UserWarning)
+            warnings.warn(f"The units '{self}' and '{other}' do not match and should not be added.", UserWarning)
         return Unit(self.value)
 
     def __sub__(self, other):
         if self != other:
-            warnings.warn('Adding units that do not match', )
+            warnings.warn(f"The units '{self}' and '{other}' do not match and should not be subtracted.", UserWarning)
         return Unit(self.value)
 
 
@@ -117,7 +117,8 @@ Temp = Unit(7)
 c = Convert()
 
 unit_dict = {
-    '': nondimensional,
+    '1': [1, nondimensional],
+    '': [1, nondimensional],
     'acceleration': [1, L / T ** 2],
     'angle': [1, theta],
     'angular_acceleration': [1, theta / T ** 2],
@@ -229,3 +230,7 @@ if __name__ == "__main__":
 
     text_unit = 'mm'
     print('eqn', unit_parser(text_unit, SIUnits))
+
+    test = Units.length - Units.velocity
+    print(test)
+

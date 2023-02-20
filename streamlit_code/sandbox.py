@@ -8,18 +8,13 @@ import matplotlib.pyplot as plt
 from itertools import product, combinations
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-from streamlit_code.streamlit_util import plot, saved_plots
+from streamlit_code.streamlit_util import Plotter
 from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 
-def sandbox_chart(group):
-    create_pi_groups(group)
-
-
-def create_pi_groups(group):
-
+def sandbox_chart(group, plotter):
         x_axis, y_axis = [], []
 
         st.sidebar.header('X Axis')
@@ -54,7 +49,10 @@ def create_pi_groups(group):
                 st.write(f'${st.session_state[key][i]}$')
         dimensioned_y = Parameter.create_from_formula({group[param]: int(st.session_state[key][i]) for i, param in enumerate(group)})
 
-        plot(dimensioned_x, dimensioned_y)
+        old_cutoff = plotter.cutoff
+        plotter.cutoff = 0
+        plotter.plot(dimensioned_x, dimensioned_y)
+        plotter.cutoff = old_cutoff
 
         length = 4
         x_limit = st.sidebar.number_input('X search limit', min_value=1000, value=2000, step=500)
@@ -81,12 +79,12 @@ def create_pi_groups(group):
         # cutoff = st.slider('Linear Regression Filter', min_value=0, max_value=100, value=0) / 100
         for x, y in product(x_axis, y_axis):
             if x.name and y.name and x.name != y.name:
-                plot(x, y, key=x.name+y.name)
+                plotter.plot(x, y)
 
 
-@st.cache
-def find_nearest_pi_group(group, arr, return_item_length=5, limit=2000):
-    matrix = group.dimensional_matrix
+@st.cache_data
+def find_nearest_pi_group(_group, arr, return_item_length=5, limit=2000):
+    matrix = _group.dimensional_matrix
     nodes = [arr]
     nearest_pi_groups = []
     counter = 0
@@ -102,7 +100,7 @@ def find_nearest_pi_group(group, arr, return_item_length=5, limit=2000):
             node_copy2[i] -= 1
             nodes.append(node_copy2)
         if (matrix @ node == np.zeros(matrix.shape[0])).all() and node.astype(bool)[arr.astype(bool)].all():
-            temp_param = Parameter.create_from_formula({group[param]: int(node[i]) for i, param in enumerate(group)})
+            temp_param = Parameter.create_from_formula({_group[param]: int(node[i]) for i, param in enumerate(_group)})
             if temp_param not in nearest_pi_groups:
                 nearest_pi_groups.append(temp_param)
         counter += 1

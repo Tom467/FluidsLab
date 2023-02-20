@@ -138,6 +138,6 @@ def generate_pi_groups(parameter_group, y_include, x_include, limit=None):
     return y_pi_groups, x_pi_groups
 
 
-@st.cache
+@st.cache_data
 def get_pi_groups(parameter_group, limit):
     return explore_paths(parameter_group, limit=limit)

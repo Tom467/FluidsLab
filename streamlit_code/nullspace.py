@@ -14,7 +14,7 @@ from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 from general_dimensional_analysis.dimensional_analysis import explore_paths, best_pi_groups
 
 
-def explore_nullspace(parameter_group):
+def explore_nullspace(parameter_group, plotter):
     y_include, x_include, shared = define_workspace(parameter_group)
 
     # st.write(parameter_group)
@@ -25,7 +25,7 @@ def explore_nullspace(parameter_group):
     x, y = pi_group_selector(y_pi_groups, x_pi_groups)
 
     for combo in product(x, y):
-        plot(combo[0], combo[1], key=combo[0].name+combo[1].name)
+        plotter.plot(combo[0], combo[1], key=combo[0].name+combo[1].name)
 
 
 def plot(x_parameter: Parameter, y_parameter: Parameter, cutoff=0, key=''):
@@ -103,7 +103,6 @@ def define_workspace(dataset: GroupOfParameters):
     return y_params, x_params, shared_param
 
 
-@st.cache
 def get_formulas(group):
     nullspace = np.array(group.dimensional_matrix.nullspace()).squeeze()
     pi_group_formulas = []
