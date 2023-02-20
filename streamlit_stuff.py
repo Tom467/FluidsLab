@@ -86,7 +86,7 @@ def governing_equations():
 # st.set_page_config(layout="wide")
 st.title("Data Processor")
 
-uploaded_file = st.sidebar.file_uploader('CSV file', type=['csv', 'tif', 'png', 'jpg'], accept_multiple_files=True)
+uploaded_file = st.sidebar.file_uploader('File', type=['csv', 'tif', 'png', 'jpg'], accept_multiple_files=True)
 
 if uploaded_file:
     if uploaded_file[0].name[-3:] == 'csv':

@@ -47,8 +47,10 @@ class Plotter:
                     for label in self.labels_to_markers:
                         plt.scatter(x[self.masks[label]],
                                     y[self.masks[label]],
-                                    s=self.size[self.masks[label]] if self.size is not None else None,
+                                    # s=self.size[self.masks[label]] if self.size is not None else None,
                                     c=self.color[self.masks[label]] if self.color is not None else None,
+                                    vmin=np.min(self.color),
+                                    vmax=np.max(self.color),
                                     marker=self.labels_to_markers[label],
                                     label=label)
                 else:
@@ -90,14 +92,14 @@ class Plotter:
     def options(self, group: GroupOfParameters) -> None:
         self.cutoff = st.slider('Regression Cutoff', 0, 100, 1)/100
         col1, col2 = st.columns(2)
-        with col1:
-            if st.checkbox('Map Size'):
-                size_map = group[st.selectbox('Size Map', group)].values
-                self.size = (size_map - np.min(size_map)) / np.max(size_map) * 100 + 10
+        # with col1:
+        #     if st.checkbox('Map Size'):
+        #         # size_map = group[st.selectbox('Size Map', group)].values
+        #         self.size = group[st.selectbox('Size Map', group)].values #(size_map - np.min(size_map)) / np.max(size_map)
         with col2:
             if st.checkbox('Map Color'):
-                color_map = group[st.selectbox('Color Map', group)].values
-                self.color = (color_map - np.min(color_map)) / np.max(color_map)
+                # color_map = group[st.selectbox('Color Map', group)].values
+                self.color = group[st.selectbox('Color Map', group)].values #(color_map - np.min(color_map)) / np.max(color_map)
 
 
 def saved_plots():
