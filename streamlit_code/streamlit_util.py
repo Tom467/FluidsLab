@@ -39,7 +39,7 @@ class Plotter:
         y = y_parameter.values
 
         if isinstance(x, np.ndarray) and isinstance(y, np.ndarray):
-            x_pred, y_pred, r_sq = self.best_fit(x, y)
+            x_pred, y_pred, r_sq = Plotter.best_fit(x, y)
             if r_sq <= self.cutoff:
                 pass
             elif st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}', value=r_sq >= self.cutoff, key=y_parameter.name+'vs'+x_parameter.name):
@@ -59,8 +59,8 @@ class Plotter:
                 plt.legend()
                 st.pyplot(plt)
 
-    @st.cache_data
-    def best_fit(self, x, y, degree=2):
+    @staticmethod
+    def best_fit(x, y, degree=2):
         model = LinearRegression().fit(x.reshape((-1, 1)), y)
         r_sq = model.score(x.reshape((-1, 1)), y)
 
