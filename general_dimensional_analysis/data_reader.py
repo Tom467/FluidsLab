@@ -41,7 +41,7 @@ class Data:
         parameters = []
         label = []
         for col in dataframe:
-            if col[0] == 'Label':
+            if col[0] == 'Label' or col[0] == 'label':
                 label = dataframe[col].values.tolist()
                 dataframe = dataframe.drop(columns=[col])
                 break
