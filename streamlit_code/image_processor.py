@@ -142,6 +142,11 @@ class Canny:
         return e
 
 
+class ConvertColor:
+    def __init__(self):
+        self.type = {'RGB2GRAY': cv2.COLOR_RGB2GRAY,
+                     'BGR2GRAY': cv2.COLOR_BGR2GRAY}
+
 def canny(image, key='', skip=False):
 
     image_copy = image.copy()

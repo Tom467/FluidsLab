@@ -36,7 +36,7 @@ class NavierStokes:
                       self.ddvddz: ['v=0', 'inviscid', '2D'],
 
                       self.gz: ['no gravity', 'gravity in x', 'gravity in y', '2D'],
-                      self.dwdt: ['w=0''steady', 'steady flow', '2D'],
+                      self.dwdt: ['w=0', 'steady', 'steady flow', '2D'],
                       self.dwdx: ['w=0', 'u=0', '2D'],
                       self.dwdy: ['w=0', 'v=0', '2D'],
                       self.dwdz: ['w=0', '2D'],

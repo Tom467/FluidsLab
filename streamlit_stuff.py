@@ -97,4 +97,8 @@ else:
     instructions = 'Upload a CSV file. Make sure the first row contains header information which should have the following formate: Name-units (e.g. Gravity-acceleration). Also avoid values of zero in the data set as this tends to lead to division by zero.'
     with st.expander('Instructions'):
         st.markdown(instructions)
+    with st.expander('Tryout Governing Equations'):
+        governing_equations()
+
+
 
