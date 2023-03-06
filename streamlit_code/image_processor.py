@@ -64,10 +64,10 @@ def process_video(uploaded_video):
 
 
 def define_operations(image_shape):
-    number_of_steps = st.number_input('Number of Steps', step=1)
+    number_of_steps = st.number_input('Number of Steps', step=1, value=1)
     operations = []
     for i in range(number_of_steps):
-        with st.expander(f"Step {i+1}"):
+        with st.expander(f"Step {i+1}", expanded=True):
             # skip = st.checkbox('Skip Step', key='skip'+f'step_{i+1}')
             operations.append(operation_selector(f'Step {i+1}', image_shape))
     return operations
@@ -216,22 +216,6 @@ class Threshold:
             self.threshold_value = st.slider('Threshold', min_value=0, max_value=255, value=100, key='Threshold' + key)
 
 
-
-
-def threshold(image, key='', skip=False):
-    image_copy = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    t = Threshold(key)
-    t.simple_type = t.simple_types[st.selectbox(f'Threshold type for {t.key}', t.simple_types)]
-    if st.checkbox('Adaptive', key='adaptive'+key, help='The algorithm determines the threshold for a pixel based on a small region around it'):
-        t.block_size = st.number_input('Block Size', min_value=3, value=195, step=10, key='block_size'+t.key, help='Determines the size of the neighbourhood area. Note: the algorithm requires an odd value')
-        t.constant = st.number_input('Constant', value=5, key='constant'+key, help='A constant that is subtracted from the mean or weighted sum of the neighbourhood pixels')
-        t.adaptive_type = t.adaptive_types[st.selectbox(f'Threshold Type', t.adaptive_types, key=f'Threshold type for {t.key}')]
-        thresh1 = t.adaptive(image_copy)
-    else:
-        t.otsu = cv2.THRESH_OTSU if st.checkbox(f'Otsu Threshold', key='Otsu_Threshold'+t.key, help="Otsu's method determines an optimal global threshold value from the image histogram") else 0
-        t.threshold_value = st.slider('Threshold', min_value=0, max_value=255, value=100, key='Threshold'+key)
-        ret, thresh1 = t.simple(image_copy)
-    return cv2.cvtColor(thresh1, cv2.COLOR_GRAY2RGB) if not skip else image
 
 
 class ImageEditor:

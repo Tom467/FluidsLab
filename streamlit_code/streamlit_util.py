@@ -1,13 +1,16 @@
 
 import copy
+import matplotlib
 import numpy as np
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 from itertools import product
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.fluid_types import fluid_types, common_constants
@@ -24,6 +27,7 @@ class Plotter:
             self.set_labels(labels)
         self.cutoff = cutoff
         self.size = None
+        self.color_label = None
         self.color = None
 
     def set_labels(self, labels):
@@ -32,8 +36,9 @@ class Plotter:
         self.masks = {a: [True if b == a else False for b in self.labels] for a in self.labels_to_markers}
 
     def plot(self, x_parameter: Parameter, y_parameter: Parameter):
-        # x_parameter, y_parameter = Plotter.plot_options(x_parameter, y_parameter)
-        plt.figure()
+        x_parameter, y_parameter, log_x, log_y, color_log, aspect_ratio = Plotter.plot_options(x_parameter, y_parameter)
+        fig = plt.figure()
+        ax = fig.add_subplot()
 
         x = x_parameter.values
         y = y_parameter.values
@@ -42,22 +47,32 @@ class Plotter:
             x_pred, y_pred, r_sq = Plotter.best_fit(x, y)
             if r_sq <= self.cutoff:
                 pass
-            elif st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}', value=r_sq >= self.cutoff, key=y_parameter.name+'vs'+x_parameter.name):
+            elif st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}',
+                             value=r_sq >= self.cutoff,
+                             key=y_parameter.name+'vs'+x_parameter.name):
                 if self.labels:
                     for label in self.labels_to_markers:
-                        plt.scatter(x[self.masks[label]],
-                                    y[self.masks[label]],
-                                    # s=self.size[self.masks[label]] if self.size is not None else None,
-                                    c=self.color[self.masks[label]] if self.color is not None else None,
-                                    vmin=np.min(self.color),
-                                    vmax=np.max(self.color),
-                                    marker=self.labels_to_markers[label],
-                                    label=label)
+                        sc = plt.scatter(x[self.masks[label]],
+                                         y[self.masks[label]],
+                                         # s=self.size[self.masks[label]] if self.size is not None else None,
+                                         c=self.color[self.masks[label]] if self.color is not None else None,
+                                         norm=colors.LogNorm(vmin=np.min(self.color), vmax=np.max(self.color)) if color_log else colors.Normalize(vmin = np.min(self.color), vmax = np.max(self.color),),
+                                         marker=self.labels_to_markers[label],
+                                         label=label)
                 else:
-                    plt.scatter(x, y, s=self.size, c=self.color)
+                    sc = plt.scatter(x, y, s=self.size, c=self.color, norm=colors.LogNorm(vmin=np.min(self.color), vmax=np.max(self.color)) if color_log else colors.Normalize(vmin = np.min(self.color), vmax = np.max(self.color)))
                 plt.plot(x_pred, y_pred, color='purple', label='Regression Model')
                 plt.xlabel(x_parameter.get_markdown(), fontsize=14)
                 plt.ylabel(y_parameter.get_markdown(), fontsize=14)
+                if self.color is not None:
+                    cbar = plt.colorbar(sc)
+                    cbar.set_label(self.color_label, rotation=90)
+                if log_x:
+                    plt.xscale('log')
+                if log_y:
+                    plt.yscale('log')
+                if aspect_ratio:
+                    ax.set_aspect('equal', adjustable='box')
                 plt.legend()
                 st.pyplot(plt)
 
@@ -87,19 +102,22 @@ class Plotter:
                 y = y ** -1
             if st.checkbox('Invert X', key='invert_x'+y.name+x.name):
                 x = x ** -1
-        return x, y
+            x_log = st.checkbox('Log plot x', key='x'+y.name+x.name)
+            y_log = st.checkbox('Log plot y', key='y'+y.name+x.name)
+            color_log = st.checkbox('Log Color Scale', key='color'+y.name+x.name)
+            aspect_ratio = st.checkbox('Equal Aspect Ration', key='aspect_ratio'+y.name+x.name)
+        return x, y, x_log, y_log, color_log, aspect_ratio
 
     def options(self, group: GroupOfParameters) -> None:
         self.cutoff = st.slider('Regression Cutoff', 0, 100, 1)/100
         col1, col2 = st.columns(2)
         # with col1:
         #     if st.checkbox('Map Size'):
-        #         # size_map = group[st.selectbox('Size Map', group)].values
-        #         self.size = group[st.selectbox('Size Map', group)].values #(size_map - np.min(size_map)) / np.max(size_map)
+        #         self.size = group[st.selectbox('Size Map', group)].values
         with col2:
             if st.checkbox('Map Color'):
-                # color_map = group[st.selectbox('Color Map', group)].values
-                self.color = group[st.selectbox('Color Map', group)].values #(color_map - np.min(color_map)) / np.max(color_map)
+                self.color_label = st.selectbox('Color Map', group)
+                self.color = group[self.color_label].values
 
 
 def saved_plots():

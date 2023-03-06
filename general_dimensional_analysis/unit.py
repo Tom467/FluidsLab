@@ -19,7 +19,7 @@ class Unit:
             # print(key, ': ', self.dimensions[key])
             if self.dimensions[key] != 0:
                 text += f'{key}^{self.dimensions[key]}*' if self.dimensions[key] != 1 else f'{key}*'
-        return text.strip('*') if self.value != 1 else 'Nondimensional'
+        return text.strip('*') if self.value != 1 else 'nondimensional'
 
     def __eq__(self, other) -> bool:
         return self.value == other.value
@@ -119,6 +119,7 @@ c = Convert()
 unit_dict = {
     '1': [1, nondimensional],
     '': [1, nondimensional],
+    'nondimensional': [1, nondimensional],
     'acceleration': [1, L / T ** 2],
     'angle': [1, theta],
     'angular_acceleration': [1, theta / T ** 2],
@@ -186,7 +187,10 @@ unit_dict = {
 
     # Angle
     'rad': [getattr(c, 'rad'), nondimensional],
+    'radian': [getattr(c, 'rad'), nondimensional],
     'deg': [getattr(c, 'deg'), nondimensional],
+    'degree': [getattr(c, 'deg'), nondimensional],
+    'rev': [getattr(c, 'rev'), nondimensional],
 
     # Force
     'N': [getattr(c, 'N'), M * L / T ** 2],

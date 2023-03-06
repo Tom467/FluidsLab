@@ -28,6 +28,8 @@ class GroupOfParameters:
         return GroupOfParameters(new)
 
     def __add__(self, other):
+        if isinstance(other, Parameter):
+            other = GroupOfParameters([other])
         new = [self[parameter] for parameter in self]
         for parameter in other:
             new.append(other[parameter])

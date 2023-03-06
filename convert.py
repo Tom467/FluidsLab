@@ -34,6 +34,7 @@ class Convert:
         # Angle
         self.rad = 1
         self.deg = 3.141592653589793238462643383279/180 * self.rad
+        self.rev = 2 * 3.141592653589793238462643383279 * self.rad
 
         # Force
         self.N = self.kg * self.m / self.s ** 2

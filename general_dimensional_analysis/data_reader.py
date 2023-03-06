@@ -40,14 +40,14 @@ class Data:
     def dataframe_to_group(dataframe: pd.DataFrame) -> [GroupOfParameters, list]:
         parameters = []
         label = []
-        for col in dataframe:
-            if col[0] == 'Label' or col[0] == 'label':
-                label = dataframe[col].values.tolist()
-                dataframe = dataframe.drop(columns=[col])
+        for name, unit in dataframe:
+            if name == 'Label' or name == 'label':
+                label = dataframe[(name, unit)].values.tolist()
+                dataframe = dataframe.drop(columns=[(name, unit)])
                 break
-        for col in dataframe:
-            scale_factor, units = unit_parser(col[1])
-            parameters.append(Parameter(col[0], units, dataframe[col].to_numpy()*scale_factor))
+        for (name, unit) in dataframe:
+            scale_factor, units = unit_parser(unit)
+            parameters.append(Parameter(name, units, dataframe[(name, unit)].to_numpy()*scale_factor))
         return GroupOfParameters(parameters), label
 
 
