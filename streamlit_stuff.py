@@ -8,6 +8,7 @@ from streamlit_code.sandbox import sandbox_chart
 from streamlit_code.pair_plot import pairplot
 from streamlit_code.nullspace import explore_nullspace
 from streamlit_code.csv_processor import process_csv
+from streamlit_code.buckingham_pi import buckingham_pi_reduction
 from streamlit_code.streamlit_util import add_constants, Plotter
 from streamlit_code.image_processor import process_image
 from streamlit_code.auto_exploration import explore_pi_groups
@@ -58,7 +59,7 @@ def csv_options(file):
         if 'operation_dict' not in st.session_state:
             st.session_state['operation_dict'] = {name[0]: ('x', lambda x: x) for name in dataframe.columns}
         include_labels = []
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         with col1:
             st.subheader('Modify')
             selected = st.selectbox('Edit', [name[0] for name in dataframe.columns])
@@ -68,46 +69,49 @@ def csv_options(file):
                 operation = 'x'
             st.session_state['operation_dict'][selected] = operation, lambda x: eval(operation)
         # with col2:
-        #     st.write([(formula, st.session_state['operation_dict'][formula][0]) for formula in st.session_state['operation_dict']])
+        #     st.subheader('Add')
+        #     name = st.text_input('Name')
+        #     units = st.text_input('Units')
+        #     input_values = st.text_input('Values')
+        #     if input_values:
+        #         values = np.array(input_values.split(','), dtype=float)
+        #         dataframe[name, units] = values
         with col2:
-            st.subheader('Add')
-            name = st.text_input('Name')
-            units = st.text_input('Units')
-            input_values = st.text_input('Values')
-            if input_values:
-                values = np.array(input_values.split(','), dtype=float)
-                dataframe[name, units] = values
-        with col3:
-            st.subheader('Filter')
-            for parameter in st.session_state['operation_dict']:
-                dataframe[parameter] = dataframe[parameter].apply(st.session_state['operation_dict'][parameter][1])
-            for label in set(labels):
-                if st.checkbox(f'{label}', value=True):
-                    include_labels.append(label)
-            mask = [item in include_labels for item in dataframe['Label'].values]
+            if labels:
+                st.write('True')
+                st.subheader('Filter')
+                for parameter in st.session_state['operation_dict']:
+                    dataframe[parameter] = dataframe[parameter].apply(st.session_state['operation_dict'][parameter][1])
+                for label in set(labels):
+                    if st.checkbox(f'{label}', value=True):
+                        include_labels.append(label)
+                mask = [item in include_labels for item in dataframe['Label'].values]
 
         st.subheader('Edited Data')
-        # dataframe = Data.group_to_dataframe(group)[mask]
-        dataframe = st.experimental_data_editor(dataframe[mask])
+        dataframe = st.experimental_data_editor(dataframe[mask]) if labels else st.experimental_data_editor(dataframe)
         group, labels = df_to_group(dataframe)
 
     with tab2:
         p.options(group)
         p.set_labels(labels)
-    supplemental_group = add_constants(group)
-    option = st.sidebar.selectbox('Select the type of data to be processed', ('Select an Option',
-                                                                              'Pair Plot',
-                                                                              'Sandbox',
-                                                                              'Auto Exploration'))
+    supplemented_group = add_constants(group)
+    option = st.sidebar.selectbox('Select the type of analysis to be completed', ('Select an Option',
+                                                                                  'Pair Plot',
+                                                                                  'Sandbox',
+                                                                                  'Buckingham Pi',
+                                                                                  'Auto Exploration'))
     with tab1:
-        if option == 'Buckingham Pi':
-            process_csv()
+        # if option == 'Buckingham Pi':
+        #     process_csv()
 
-        elif option == 'Sandbox':
-            sandbox_chart(supplemental_group, p)
+        if option == 'Sandbox':
+            sandbox_chart(supplemented_group, p)
+
+        elif option == 'Buckingham Pi':
+            buckingham_pi_reduction(supplemented_group, p)
 
         elif option == 'Auto Exploration':
-            explore_pi_groups(supplemental_group, p)
+            explore_pi_groups(supplemented_group, p)
 
         elif option == 'Pair Plot':
             pairplot(group)
@@ -141,6 +145,3 @@ else:
         st.markdown(instructions)
     with st.expander('BETA feature: Governing Equations'):
         governing_equations()
-
-
-

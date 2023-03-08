@@ -36,20 +36,21 @@ class Plotter:
         self.masks = {a: [True if b == a else False for b in self.labels] for a in self.labels_to_markers}
 
     def plot(self, x_parameter: Parameter, y_parameter: Parameter):
-        x_parameter, y_parameter, log_x, log_y, color_log, aspect_ratio = Plotter.plot_options(x_parameter, y_parameter)
+        # x_parameter, y_parameter, log_x, log_y, color_log, aspect_ratio = Plotter.plot_options(x_parameter, y_parameter)
         fig = plt.figure()
         ax = fig.add_subplot()
 
         x = x_parameter.values
         y = y_parameter.values
 
-        if isinstance(x, np.ndarray) and isinstance(y, np.ndarray):
+        if isinstance(x, np.ndarray) and isinstance(y, np.ndarray) and x.shape == y.shape:
             x_pred, y_pred, r_sq = Plotter.best_fit(x, y)
             if r_sq <= self.cutoff:
                 pass
             elif st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}',
                              value=r_sq >= self.cutoff,
                              key=y_parameter.name+'vs'+x_parameter.name):
+                log_x, log_y, color_log, aspect_ratio = Plotter.plot_options(x_parameter, y_parameter)
                 if self.labels:
                     for label in self.labels_to_markers:
                         sc = plt.scatter(x[self.masks[label]],
@@ -98,18 +99,18 @@ class Plotter:
     @staticmethod
     def plot_options(x, y):
         with st.expander('Plotting Options'):
-            if st.checkbox('Invert Y', key='invert_y'+y.name+x.name):
-                y = y ** -1
-            if st.checkbox('Invert X', key='invert_x'+y.name+x.name):
-                x = x ** -1
+            # if st.checkbox('Invert Y', key='invert_y'+y.name+x.name):
+            #     y = y ** -1
+            # if st.checkbox('Invert X', key='invert_x'+y.name+x.name):
+            #     x = x ** -1
             x_log = st.checkbox('Log plot x', key='x'+y.name+x.name)
             y_log = st.checkbox('Log plot y', key='y'+y.name+x.name)
             color_log = st.checkbox('Log Color Scale', key='color'+y.name+x.name)
             aspect_ratio = st.checkbox('Equal Aspect Ration', key='aspect_ratio'+y.name+x.name)
-        return x, y, x_log, y_log, color_log, aspect_ratio
+        return x_log, y_log, color_log, aspect_ratio
 
     def options(self, group: GroupOfParameters) -> None:
-        self.cutoff = st.slider('Regression Cutoff', 0, 100, 1)/100
+        self.cutoff = st.slider('Regression Cutoff', 0, 100, 70)/100
         col1, col2 = st.columns(2)
         # with col1:
         #     if st.checkbox('Map Size'):

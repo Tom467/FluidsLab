@@ -1,17 +1,9 @@
 
 import copy
 import numpy as np
-import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
 
-from itertools import product, combinations
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-from streamlit_code.streamlit_util import Plotter
-from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
-from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 
 def sandbox_chart(group, plotter):
@@ -54,32 +46,32 @@ def sandbox_chart(group, plotter):
         plotter.plot(dimensioned_x, dimensioned_y)
         plotter.cutoff = old_cutoff
 
-        length = 4
-        x_limit = st.sidebar.number_input('X search limit', min_value=1000, value=2000, step=500)
-        x_nearest = find_nearest_pi_group(group, st.session_state[x_key], return_item_length=length, limit=x_limit)
-        # st.write(st.)
-        cols = st.sidebar.columns(2)
-        for i, param in enumerate(x_nearest):
-            with cols[i % 2]:
-                if st.checkbox(x_nearest[i].get_markdown()):
-                    x_axis.append(x_nearest[i])
-                st.write(x_nearest[i].get_markdown())
-
-        length = 4
-        y_limit = st.sidebar.number_input('Y search limit', min_value=1000, value=2000, step=500)
-        y_nearest = find_nearest_pi_group(group, st.session_state[key], return_item_length=length, limit=y_limit)
-
-        cols = st.sidebar.columns(2)
-        for i, param in enumerate(y_nearest):
-            with cols[i % 2]:
-                if st.checkbox(y_nearest[i].get_markdown(), key=y_nearest[i].get_markdown() + 'y'):
-                    y_axis.append(y_nearest[i])
-                st.write(y_nearest[i].get_markdown())
-
-        # cutoff = st.slider('Linear Regression Filter', min_value=0, max_value=100, value=0) / 100
-        for x, y in product(x_axis, y_axis):
-            if x.name and y.name and x.name != y.name:
-                plotter.plot(x, y)
+        # length = 4
+        # x_limit = st.sidebar.number_input('X search limit', min_value=1000, value=2000, step=500)
+        # x_nearest = find_nearest_pi_group(group, st.session_state[x_key], return_item_length=length, limit=x_limit)
+        # # st.write(st.)
+        # cols = st.sidebar.columns(2)
+        # for i, param in enumerate(x_nearest):
+        #     with cols[i % 2]:
+        #         if st.checkbox(x_nearest[i].get_markdown()):
+        #             x_axis.append(x_nearest[i])
+        #         st.write(x_nearest[i].get_markdown())
+        #
+        # length = 4
+        # y_limit = st.sidebar.number_input('Y search limit', min_value=1000, value=2000, step=500)
+        # y_nearest = find_nearest_pi_group(group, st.session_state[key], return_item_length=length, limit=y_limit)
+        #
+        # cols = st.sidebar.columns(2)
+        # for i, param in enumerate(y_nearest):
+        #     with cols[i % 2]:
+        #         if st.checkbox(y_nearest[i].get_markdown(), key=y_nearest[i].get_markdown() + 'y'):
+        #             y_axis.append(y_nearest[i])
+        #         st.write(y_nearest[i].get_markdown())
+        #
+        # # cutoff = st.slider('Linear Regression Filter', min_value=0, max_value=100, value=0) / 100
+        # for x, y in product(x_axis, y_axis):
+        #     if x.name and y.name and x.name != y.name:
+        #         plotter.plot(x, y)
 
 
 @st.cache_data

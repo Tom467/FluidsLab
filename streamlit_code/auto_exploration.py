@@ -6,9 +6,6 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 from itertools import product, combinations
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
@@ -62,7 +59,7 @@ def compare_deviation(pi_groups, group):
 
 def parameter_selector(full_group: GroupOfParameters) -> GroupOfParameters:
     include_parameters = []
-    st.sidebar.subheader('Select variables to include in exploration:')
+    st.sidebar.subheader('Select up to 6 variables to include in exploration:')
     for parameter in full_group:
         if st.sidebar.checkbox(parameter, key='selector'+parameter) and len(include_parameters) < 7:
             include_parameters.append(full_group[parameter])
