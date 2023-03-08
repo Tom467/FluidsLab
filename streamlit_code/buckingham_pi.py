@@ -53,7 +53,6 @@ def custom_paiplot(group, titles):
             t.set_size(5)
             t = axs[i, j].xaxis.get_offset_text()
             t.set_size(5)
-            # st.write(group[parameter1].get_markdown())
             axs[i, j].set_ylabel(group[parameter1].get_markdown(), fontsize=8)
             axs[i, j].set_xlabel(group[parameter2].get_markdown(), fontsize=8)
             if i == 0:
