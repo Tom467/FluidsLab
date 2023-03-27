@@ -7,6 +7,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
+from pathlib import Path
 from itertools import product
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
@@ -15,6 +16,11 @@ from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.fluid_types import fluid_types, common_constants
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
+
+
+@st.cache_data
+def read_markdown_file(markdown_file):
+    return Path(markdown_file).read_text()
 
 
 class Plotter:

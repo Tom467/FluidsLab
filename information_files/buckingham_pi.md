@@ -1,5 +1,5 @@
-# Dimensional Analysis
-This software package automatically processes experimently collected data using Buckingham Pi Theory in order to
+# Buckingham Pi Theory
+This software package automatically processes experimentally collected data using Buckingham Pi Theory in order to
 display in chart format all possible correlations between experiment variables or parameters.
 ### Experiment Research
 Every experiment has two types of variables: independent and dependent. The goal of the experimenter is to derive
@@ -65,6 +65,5 @@ relationship than others.
 Dimensional analysis has traditionally been done by hand by the experimenter. The process can be laborious and
 algebraic errors can occur in rushed calculations. It can be extra tedious exploring all the different 
 combinations of repeating variables. The algorithmic nature of dimensional analysis suggests that a computer 
-can aid in the process, and that is the goal of this project. This package seeks to take experimentally 
-collected data and display all possible relations using dimensional analysis for the user to then interpret. 
-Incredible data is useless if it is displayed ineffectively.
+can aid in the process, and that is the goal of this analysis. This package seeks to take experimentally 
+collected data and display all possible repeated variables using Buckingham Pi theory for the user to then interpret.

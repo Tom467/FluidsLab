@@ -23,7 +23,8 @@ def process_image(image_files):
 
     with col1:
         operations = define_operations(image.shape)
-    new_image = perform_operations(image, operations)
+    results = perform_operations(image, operations)
+    new_image = results['image']
     with col2:
         st.markdown(
             """
@@ -46,6 +47,7 @@ def write_video(output_file, images, framerate=20, color=False, fourcc=cv2.Video
     for i in images:
         video.write(i)
     video.release()
+
 
 @st.cache_data
 def process_video(uploaded_video):

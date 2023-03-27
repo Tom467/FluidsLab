@@ -53,7 +53,8 @@ class Data:
 
 if __name__ == "__main__":
 
-    experiment_as_group = Data.csv_to_group("C:/Users/truma/Downloads/testdata3.csv")
+    experiment_as_group, label = Data.csv_to_group(r"C:\Users\truma\Downloads\SeedsWithSpeciesandMass.csv")
     print(*experiment_as_group)
-    experiment_as_dataframe = Data.group_to_dataframe(experiment_as_group)
-    print(experiment_as_dataframe)
+    print(experiment_as_group['Area'].values)
+    # experiment_as_dataframe = Data.group_to_dataframe(experiment_as_group)
+    # print(experiment_as_dataframe)

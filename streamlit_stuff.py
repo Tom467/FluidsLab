@@ -18,12 +18,6 @@ from governing_equations.navier_stokes import NavierStokes
 
 st.set_page_config(page_title="Data Processor", layout="wide")
 
-
-@st.cache_data
-def read_markdown_file(markdown_file):
-    return Path(markdown_file).read_text()
-
-
 @st.cache_data
 def file_reader(file):
     dataframe = Data.csv_to_dataframe(file)
@@ -48,7 +42,7 @@ def image_options(files):
 def csv_options(file):
     st.subheader('Dimensional Analysis')
     # with st.expander('What is Dimensional Analysis?'):
-    #     intro_markdown = read_markdown_file("readme.md")
+    #     intro_markdown = read_markdown_file("buckingham_pi.md")
     #     st.markdown(intro_markdown)
 
     tab1, tab2, tab3 = st.tabs(['Analysis', 'Plot Options', 'Data Table'])
@@ -89,7 +83,9 @@ def csv_options(file):
 
         st.subheader('Edited Data')
         dataframe = st.experimental_data_editor(dataframe[mask]) if labels else st.experimental_data_editor(dataframe)
+        print(dataframe)
         group, labels = df_to_group(dataframe)
+        print(group['Area'].values)
 
     with tab2:
         p.options(group)

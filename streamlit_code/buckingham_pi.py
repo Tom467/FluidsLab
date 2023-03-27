@@ -6,12 +6,16 @@ import seaborn as sns
 import streamlit as st
 import matplotlib.pyplot as plt
 
+from pathlib import Path
+from streamlit_code.streamlit_util import read_markdown_file
 from general_dimensional_analysis.data_reader import Data
 from general_dimensional_analysis.parameter import Parameter
 from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 
 def buckingham_pi_reduction(group, plotter):
+    with st.expander('Addition Information on Buckingham Pi'):
+        st.markdown(read_markdown_file('/information_files/buckingham_pi.md'))
     for combo in itertools.combinations(group, group.dimensional_matrix.rank()):
         temp_group = GroupOfParameters(group[parameter] for parameter in combo)
         if temp_group.dimensional_matrix.rank() == group.dimensional_matrix.rank():
