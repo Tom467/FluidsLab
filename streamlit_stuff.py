@@ -137,7 +137,7 @@ if uploaded_file:
         image_options(uploaded_file)
 else:
     instructions = 'Upload either images or data in a csv file'
-    with st.expander('Instructions'):
+    with st.expander('Instructions', expanded=True):
         st.markdown(instructions)
         st.markdown('### Instructions for Uploading a CSV File')
         st.image(r'information_files/basic_table.png')
