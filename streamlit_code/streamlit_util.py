@@ -35,6 +35,7 @@ class Plotter:
         self.size = None
         self.color_label = None
         self.color = None
+        self.show_regression = False
 
     def set_labels(self, labels):
         self.labels = labels
@@ -56,7 +57,7 @@ class Plotter:
             elif st.checkbox(f'Coefficient of Determination: {round(r_sq, 2)}',
                              value=r_sq >= self.cutoff,
                              key=y_parameter.name+'vs'+x_parameter.name):
-                log_x, log_y, color_log, aspect_ratio = Plotter.plot_options(x_parameter, y_parameter)
+                log_x, log_y, color_log, aspect_ratio, show_regression = self.plot_options(x_parameter, y_parameter)
                 if self.labels:
                     for label in self.labels_to_markers:
                         sc = plt.scatter(x[self.masks[label]],
@@ -68,7 +69,8 @@ class Plotter:
                                          label=label)
                 else:
                     sc = plt.scatter(x, y, s=self.size, c=self.color, norm=colors.LogNorm(vmin=np.min(self.color), vmax=np.max(self.color)) if color_log else colors.Normalize(vmin = np.min(self.color), vmax = np.max(self.color)))
-                plt.plot(x_pred, y_pred, color='purple', label='Regression Model')
+                if (self.show_regression and show_regression) or show_regression:
+                    plt.plot(x_pred, y_pred, color='purple', label='Regression Model')
                 plt.xlabel(x_parameter.get_markdown(), fontsize=14)
                 plt.ylabel(y_parameter.get_markdown(), fontsize=14)
                 if self.color is not None:
@@ -102,8 +104,8 @@ class Plotter:
             y_pred = poly_model.predict(poly.fit_transform(x_pred.reshape(-1, 1)))
         return x_pred, y_pred, r_sq
 
-    @staticmethod
-    def plot_options(x, y):
+
+    def plot_options(self, x, y):
         with st.expander('Plotting Options'):
             # if st.checkbox('Invert Y', key='invert_y'+y.name+x.name):
             #     y = y ** -1
@@ -113,10 +115,12 @@ class Plotter:
             y_log = st.checkbox('Log plot y', key='y'+y.name+x.name)
             color_log = st.checkbox('Log Color Scale', key='color'+y.name+x.name)
             aspect_ratio = st.checkbox('Equal Aspect Ration', key='aspect_ratio'+y.name+x.name)
-        return x_log, y_log, color_log, aspect_ratio
+            show_regression = st.checkbox('Show Regression Line', key='regression_line'+y.name+x.name, value=self.show_regression)
+        return x_log, y_log, color_log, aspect_ratio, show_regression
 
     def options(self, group: GroupOfParameters) -> None:
         self.cutoff = st.slider('Regression Cutoff', 0, 100, 70)/100
+        self.show_regression = st.checkbox('Show Regression line', value=False)
         col1, col2 = st.columns(2)
         # with col1:
         #     if st.checkbox('Map Size'):

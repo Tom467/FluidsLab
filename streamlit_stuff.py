@@ -1,8 +1,6 @@
 import numpy as np
 import streamlit as st
 from numpy import sin, arcsin, cos, arccos, tan, arctan, pi, sqrt, log, exp, deg2rad
-sind = lambda degrees: sin(deg2rad(degrees))
-cosd = lambda degrees: cos(deg2rad(degrees))
 from pathlib import Path
 from streamlit_code.sandbox import sandbox_chart
 from streamlit_code.pair_plot import pairplot
@@ -14,6 +12,10 @@ from streamlit_code.image_processor import process_image
 from streamlit_code.auto_exploration import explore_pi_groups
 from general_dimensional_analysis.data_reader import Data
 from governing_equations.navier_stokes import NavierStokes
+
+sind = lambda degrees: sin(deg2rad(degrees))
+cosd = lambda degrees: cos(deg2rad(degrees))
+tand = lambda degrees: tan(deg2rad(degrees))
 
 
 st.set_page_config(page_title="Data Processor", layout="wide")
@@ -83,9 +85,7 @@ def csv_options(file):
 
         st.subheader('Edited Data')
         dataframe = st.experimental_data_editor(dataframe[mask]) if labels else st.experimental_data_editor(dataframe)
-        print(dataframe)
         group, labels = df_to_group(dataframe)
-        print(group['Area'].values)
 
     with tab2:
         p.options(group)
@@ -139,5 +139,8 @@ else:
     instructions = 'Upload either images or data in a csv file'
     with st.expander('Instructions'):
         st.markdown(instructions)
+        st.markdown('### Instructions for Uploading a CSV File')
+        st.image(r'information_files/basic_table.png')
+        st.markdown(Path(r'information_files/csv_file.md').read_text())
     with st.expander('BETA feature: Governing Equations'):
         governing_equations()
