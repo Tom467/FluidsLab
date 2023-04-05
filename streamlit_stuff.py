@@ -47,11 +47,13 @@ def csv_options(file):
     #     intro_markdown = read_markdown_file("buckingham_pi.md")
     #     st.markdown(intro_markdown)
 
-    tab1, tab2, tab3 = st.tabs(['Analysis', 'Plot Options', 'Data Table'])
+    tab1, tab2, tab3 = st.tabs(['Analysis', 'Global Plot Options', 'Data Table'])
 
     p = Plotter()
     with tab3:
         (group, labels), dataframe = file_reader(file)
+
+        p.set_labels(labels)
         if 'operation_dict' not in st.session_state:
             st.session_state['operation_dict'] = {name[0]: ('x', lambda x: x) for name in dataframe.columns}
         include_labels = []
@@ -89,7 +91,7 @@ def csv_options(file):
 
     with tab2:
         p.options(group)
-        p.set_labels(labels)
+        p.set_masks(labels)
     supplemented_group = add_constants(group)
     option = st.sidebar.selectbox('Select the type of analysis to be completed', ('Select an Option',
                                                                                   'Pair Plot',
