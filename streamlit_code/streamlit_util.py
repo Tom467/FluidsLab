@@ -26,7 +26,7 @@ def read_markdown_file(markdown_file):
 class Plotter:
     def __init__(self, labels=None, cutoff=0.7):
         self.available_markers = ['o', 'v', 's', 'p', '8', '*', 'h', 'x', 'd', '1', '^', 'P', '2', '3', '<', '>', 'H']
-        self.available_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'] * 2
+        self.available_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#9acd32'] * 2
         self.labels_to_markers = None
         self.labels_to_colors = None
         self.show_legend = True
@@ -158,7 +158,7 @@ class Plotter:
                 self.color = group[self.color_label].values
 
         with st.expander('Colors'):
-            self.available_colors = st.text_input('CSS Colors', help='Enter CSS color codes seperated by commas', value='#1f77b4, #ff7f0e, #2ca02c, #d62728, #9467bd, #8c564b, #e377c2, #7f7f7f, #bcbd22, #17becf').replace(' ','').split(',')
+            self.available_colors = st.text_input('CSS Colors', help='Enter CSS color codes seperated by commas', value='#1f77b4, #ff7f0e, #2ca02c, #d62728, #9467bd, #8c564b, #e377c2, #7f7f7f, #bcbd22, #17becf, #9acd32, #7fff00').replace(' ','').split(',')
             for color in self.available_colors:
                 st.markdown(f"<span style='color:{color}'>{color}</span>", unsafe_allow_html=True)
             if len(self.available_colors) < 20:

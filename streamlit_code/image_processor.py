@@ -218,8 +218,6 @@ class Threshold:
             self.threshold_value = st.slider('Threshold', min_value=0, max_value=255, value=100, key='Threshold' + key)
 
 
-
-
 class ImageEditor:
     def __init__(self):
         pass
