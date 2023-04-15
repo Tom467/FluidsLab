@@ -76,7 +76,6 @@ def csv_options(file):
         #         dataframe[name, units] = values
         with col2:
             if labels:
-                st.write('True')
                 st.subheader('Filter')
                 for parameter in st.session_state['operation_dict']:
                     dataframe[parameter] = dataframe[parameter].apply(st.session_state['operation_dict'][parameter][1])
@@ -146,3 +145,23 @@ else:
         st.markdown(Path(r'information_files/csv_file.md').read_text())
     with st.expander('BETA feature: Governing Equations'):
         governing_equations()
+
+
+# if 'stuff' not in st.session_state:
+#     st.session_state['stuff'] = {}
+# # st.write(st.session_state.stuff)
+#
+# item = tuple(st.text_input('stuff_adder').split())
+# if item and item not in st.session_state.stuff:
+#     st.session_state.stuff[item] = True
+#
+# # st.write
+# st.write(st.session_state.stuff)
+# for element in st.session_state.stuff:
+#     if st.checkbox(element, value=True):
+#         st.session_state.stuff[element] = True
+#     else:
+#         # st.write('remove')
+#         st.session_state.stuff[element] = False
+# st.write(st.session_state.stuff)
+

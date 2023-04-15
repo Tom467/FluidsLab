@@ -7,8 +7,6 @@ from general_dimensional_analysis.parameter import Parameter
 
 
 def sandbox_chart(group, plotter):
-        x_axis, y_axis = [], []
-
         st.sidebar.header('X Axis')
         x_key = 'x_axis'
         cols = st.sidebar.columns(len(group.parameters))
@@ -44,6 +42,11 @@ def sandbox_chart(group, plotter):
         old_cutoff = plotter.cutoff
         plotter.cutoff = 0
         plotter.plot(dimensioned_x, dimensioned_y)
+        if plotter.plot_saving:
+            st.subheader('Saved Plots:')
+            for saved in reversed(plotter.saved_plots):
+                if bool(plotter.saved_plots.get(saved)) and (dimensioned_x != plotter.saved_plots[saved][0] or dimensioned_y != plotter.saved_plots[saved][1]):
+                    plotter.plot(*plotter.saved_plots[saved])
         plotter.cutoff = old_cutoff
 
         # length = 4

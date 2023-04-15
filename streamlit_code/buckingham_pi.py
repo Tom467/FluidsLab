@@ -15,7 +15,7 @@ from general_dimensional_analysis.group_of_parameter import GroupOfParameters
 
 def buckingham_pi_reduction(group, plotter):
     with st.expander('Addition Information on Buckingham Pi'):
-        st.markdown(read_markdown_file('/information_files/buckingham_pi.md'))
+        st.markdown(read_markdown_file(r'information_files\buckingham_pi.md'))
     for combo in itertools.combinations(group, group.dimensional_matrix.rank()):
         temp_group = GroupOfParameters(group[parameter] for parameter in combo)
         if temp_group.dimensional_matrix.rank() == group.dimensional_matrix.rank():
@@ -28,15 +28,12 @@ def temp_name(base, remainder):
         arr = np.array([0]*remainder.dimensional_matrix.rank()+[1])
         arr[-1] = 1
         pi_groups += [find_nearest_pi_group(base + remainder[parameter], arr)]
-        # st.write('Pi Group', parameter, pi_groups[-1])
     group = GroupOfParameters(pi_groups)
 
-    cols = st.columns(len(base.parameters))
-    # for parameter in base:
-    #     st.markdown(base[parameter].get_markdown())
+    repeating_variables = ''
     for i, parameter in enumerate(base):
-        with cols[i]:
-            st.subheader(base[parameter].get_markdown())
+        repeating_variables += base[parameter].get_markdown() + ', '
+    st.write('Repeating variables: ' + repeating_variables.strip(', '))
 
     titles = [remainder[parameter].get_markdown() for parameter in remainder]
     custom_paiplot(group, titles)
@@ -67,6 +64,7 @@ def custom_paiplot(group, titles):
 
     st.pyplot(plt)
 
+
 def pairplot(group):
     df = Data.group_to_dataframe_without_units(group)
     options = list(df.columns)
@@ -80,9 +78,7 @@ def find_nearest_pi_group(group, arr):
     # st.write(np.array(matrix, dtype=float))
     # st.write(matrix[:, -1])
     arr = list(-np.round(np.array(matrix[:, :-1].LUsolve(matrix[:, -1]), dtype=np.float64).flatten(), 5)) + [1]
-    print(arr)
     arr = find_int(arr)
-    print(arr)
     return Parameter.create_from_formula({group[param]: int(arr[i]) for i, param in enumerate(group)})
     # nodes = [arr]
     # counter = 1
@@ -125,5 +121,5 @@ def find_int(arr):
                 break
         if test:
             return [int(round(i*item)) for item in arr]
-    st.write("Could not find one a Pi Group with integer exponents")
+    st.write("Could not find a Pi Group with integer exponents")
     return arr
