@@ -1,3 +1,5 @@
+
+import json
 import numpy as np
 import streamlit as st
 from numpy import sin, arcsin, cos, arccos, tan, arctan, pi, sqrt, log, exp, deg2rad
@@ -97,6 +99,9 @@ def csv_options(file):
                                                                                   'Sandbox',
                                                                                   'Buckingham Pi',
                                                                                   'Auto Exploration'))
+    # jsonStr = json.dumps(p)
+    # st.write(p.__dict__)
+
     with tab1:
         # if option == 'Buckingham Pi':
         #     process_csv()

@@ -35,7 +35,7 @@ def generate_pi_groups(parameters, _group, arr=(0, 1, -1, 2, -2)):
     pi_group_list = []
     for combo in product(np.array(arr), repeat=matrix.shape[1]):
         node = np.array(combo)
-        if (matrix @ node == np.zeros(matrix.shape[0])).all():  # and not (node == np.zeros(matrix.shape[1])).all():
+        if (matrix @ node == np.zeros(matrix.shape[0])).all():
             pi_group_list.append(node)
     return pi_group_list
 
