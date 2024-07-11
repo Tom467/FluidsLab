@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from buckingham_pi_theorem.dimensional_analysis import DimensionalAnalysis
 
 
-@st.cache
+@st.cache_data
 def read_markdown_file(markdown_file):
     return Path(markdown_file).read_text()
 
