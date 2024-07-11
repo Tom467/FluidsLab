@@ -20,11 +20,23 @@ class Data:
         # TODO add the ability to convert to standard units (i.e. mm to m) using Convert and ConvertTemperature
         parameters = ListOfParameters([])
         for key in self.data:
-            parameters.append(Parameter(value=[value for value in self.data[key]],
-                                        units=getattr(Units(), key.split('-')[1]),
-                                        name=key.split('-')[0]))
+            try:
+                print(f"Processing key: {key}")  # Debugging statement
+                parts = key.split('-')
+                if len(parts) > 1 and parts[1]:  # Check if there's a valid second part
+                    unit_key = parts[1]
+                    unit = getattr(Units, unit_key, None)
+                    if unit is not None:
+                        parameters.append(Parameter(value=[value for value in self.data[key]],
+                                                units=unit,
+                                                name=parts[0]))
+                    else:
+                        print(f"Attribute '{unit_key}' not found in Units class")
+                else:
+                    print(f"Key '{key}' does not have a valid second part after hyphen, put into form parameter name-base unit")
+            except Exception as e:
+                print(f"Error processing key '{key}': {e}")
         return parameters
-
 
 if __name__ == "__main__":
     experiment = Data("C:/Users/truma/Downloads/test - bernoulli_v2.csv")
