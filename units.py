@@ -107,6 +107,9 @@ class Unit:
         # TODO Check if unit system of self and other are the same
         return self.n / self.d == other.n / other.d
 
+    def __hash__(self):
+        return hash(self.n / self.d)
+
     def __ne__(self, other):
         # TODO Check if unit system of self and other are the same
         return self.n / self.d != other.n / other.d
@@ -192,8 +195,8 @@ class Units:
     volume = L ** 3  # 1331
     work = M * L ** 2 / T ** 2  # 90.75
     g = L / T ** 2  # 2.75
-    Q = volume / T  # 665.5
-    A = area  # 121
+    # Q = volume / T  # 665.5
+    # A = area  # 121
 
     # Constants
     boltzmanns_constant = force * L / Temp

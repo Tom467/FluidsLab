@@ -1,101 +1,175 @@
-import cv2
-import numpy as np
-import pandas as pd
-import streamlit as st
-from PIL import Image
-from pathlib import Path
-from data_reader import Data
-import matplotlib.pyplot as plt
-from buckingham_pi_theorem.dimensional_analysis import DimensionalAnalysis
 
+import json
+import numpy as np
+import streamlit as st
+from numpy import sin, arcsin, cos, arccos, tan, arctan, pi, sqrt, log, exp, deg2rad
+from pathlib import Path
+from streamlit_code.sandbox import sandbox_chart
+from streamlit_code.pair_plot import pairplot
+from streamlit_code.nullspace import explore_nullspace
+from streamlit_code.csv_processor import process_csv
+from streamlit_code.buckingham_pi import buckingham_pi_reduction
+from streamlit_code.streamlit_util import add_constants, Plotter
+from streamlit_code.image_processor import process_image
+from streamlit_code.auto_exploration import explore_pi_groups
+from general_dimensional_analysis.data_reader import Data
+from governing_equations.navier_stokes import NavierStokes
+
+sind = lambda degrees: sin(deg2rad(degrees))
+cosd = lambda degrees: cos(deg2rad(degrees))
+tand = lambda degrees: tan(deg2rad(degrees))
 
 @st.cache_data
 def read_markdown_file(markdown_file):
     return Path(markdown_file).read_text()
 
+st.set_page_config(page_title="Data Processor", layout="wide")
 
-def generate_plots(dimensional_analysis):
-    plt.close('all')
-    for h, pi_group_set in enumerate(dimensional_analysis.pi_group_sets):
-        text = pi_group_set.repeating_variables[0].name
-        for repeating in pi_group_set.repeating_variables[1:]:
-            text += ', ' + repeating.name
-        with st.expander(text, expanded=True):
-            for i, pi_group in enumerate(pi_group_set.pi_groups[1:]):
-                plt.figure()
-                plt.scatter(pi_group.values, pi_group_set.pi_groups[0].values)
-                plt.xlabel(pi_group.formula, fontsize=14)
-                plt.ylabel(pi_group_set.pi_groups[0].formula, fontsize=14)
-                st.pyplot(plt)
-        my_bar.progress((h+1) / len(dimensional_analysis.pi_group_sets))
+@st.cache_data
+def file_reader(file):
+    dataframe = Data.csv_to_dataframe(file)
+    st.subheader('Original Data')
+    st.dataframe(dataframe)
+    return df_to_group(dataframe), dataframe
 
 
-def find_contours(img, threshold1=100, threshold2=200, blur=3):
-    img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    img_blur = cv2.GaussianBlur(img_gray, (blur, blur), sigmaX=0, sigmaY=0)
-    edges = cv2.Canny(image=img_blur, threshold1=threshold1, threshold2=threshold2)
-    return cv2.findContours(image=edges, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE), edges
+@st.cache_data
+def df_to_group(dataframe):
+    group, labels = Data.dataframe_to_group(dataframe)
+    return group, labels
+
+
+def image_options(files):
+    st.subheader('Edges Detection and Contour Tracking')
+    with st.expander('Instructions'):
+        st.write('Upload images and then select the number of operations to perform on the image. A typical place to start is to crop the image to show just the region of interest, then search for edges with canny.')
+    process_image(files)
+
+
+def csv_options(file):
+    st.subheader('Dimensional Analysis')
+    # with st.expander('What is Dimensional Analysis?'):
+    #     intro_markdown = read_markdown_file("buckingham_pi.md")
+    #     st.markdown(intro_markdown)
+
+    tab1, tab2, tab3 = st.tabs(['Analysis', 'Global Plot Options', 'Data Table'])
+
+    p = Plotter()
+    with tab3:
+        (group, labels), dataframe = file_reader(file)
+
+        p.set_labels(labels)
+        if 'operation_dict' not in st.session_state:
+            st.session_state['operation_dict'] = {name[0]: ('x', lambda x: x) for name in dataframe.columns}
+        include_labels = []
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader('Modify')
+            selected = st.selectbox('Edit', [name[0] for name in dataframe.columns])
+            # st.write(st.session_state['operation_dict'][selected][0])
+            operation = st.text_input('formula', value=st.session_state['operation_dict'][selected][0], key=selected, help='Use x as the variable to represent the variable being modified. Availbe functions include: sin, sind, arcsin, cos, cosd, arcos, tan, arctan, pi, sqrt, log, and exp. Note: to raise a value to a power use ** instead of the commonly used ^.')
+            if operation == '':
+                operation = 'x'
+            st.session_state['operation_dict'][selected] = operation, lambda x: eval(operation)
+        # with col2:
+        #     st.subheader('Add')
+        #     name = st.text_input('Name')
+        #     units = st.text_input('Units')
+        #     input_values = st.text_input('Values')
+        #     if input_values:
+        #         values = np.array(input_values.split(','), dtype=float)
+        #         dataframe[name, units] = values
+        with col2:
+            if labels:
+                st.subheader('Filter')
+                for parameter in st.session_state['operation_dict']:
+                    dataframe[parameter] = dataframe[parameter].apply(st.session_state['operation_dict'][parameter][1])
+                for label in set(labels):
+                    if st.checkbox(f'{label}', value=True):
+                        include_labels.append(label)
+                mask = [item in include_labels for item in dataframe['Label'].values]
+
+        st.subheader('Edited Data')
+        dataframe = st.experimental_data_editor(dataframe[mask]) if labels else st.experimental_data_editor(dataframe)
+        group, labels = df_to_group(dataframe)
+
+    with tab2:
+        p.options(group)
+        p.set_masks(labels)
+    supplemented_group = add_constants(group)
+    option = st.sidebar.selectbox('Select the type of analysis to be completed', ('Select an Option',
+                                                                                  'Pair Plot',
+                                                                                  'Sandbox',
+                                                                                  'Buckingham Pi',
+                                                                                  'Auto Exploration'))
+    # jsonStr = json.dumps(p)
+    # st.write(p.__dict__)
+
+    with tab1:
+        # if option == 'Buckingham Pi':
+        #     process_csv()
+
+        if option == 'Sandbox':
+            sandbox_chart(supplemented_group, p)
+
+        elif option == 'Buckingham Pi':
+            buckingham_pi_reduction(supplemented_group, p)
+
+        elif option == 'Auto Exploration':
+            explore_pi_groups(supplemented_group, p)
+
+        elif option == 'Pair Plot':
+            pairplot(group)
+
+
+def governing_equations():
+    st.subheader('Find the Governing Equations')
+    ns = NavierStokes()
+    assumptions = st.text_input('Assumptions', value='2D, no gravity, steady', help="Acceptable assumptions: no gravity, steady, u=0, 2D, constant pressure, inviscid, external flow")
+    assumptions = [assume.strip() for assume in assumptions.split(',')]
+    eqn_x, eqn_y, eqn_z = ns.simplify_naiver(assumptions)
+    st.markdown('The $Navier$-$Stokes$ equations are:')
+    st.markdown(f'x-direction: {eqn_x}')
+    st.markdown(f'y-direction: {eqn_y}')
+    st.markdown(f'z-direction: {eqn_z}')
 
 
 # st.set_page_config(layout="wide")
 st.title("Data Processor")
 
-instructions = 'Upload a CSV file. Make sure the first row contains header information which should have the following formate: Name-units (e.g. Gravity-acceleration). Also avoid values of zero in the data set as this tends to lead to division by zero.'
+uploaded_file = st.sidebar.file_uploader('File', type=['csv', 'tif', 'png', 'jpg', 'jpeg'], accept_multiple_files=True)
 
-option = st.sidebar.selectbox('Select the type of data to be processed', ('Select an Option', 'Images', 'CSV File'))
-file = None
-if option == 'CSV File':
-    file = st.sidebar.file_uploader('CSV file', type=['csv'], help=instructions)
-    st.subheader('Dimensional Analysis')
-    with st.expander('What is Dimensional Analysis?'):
-        intro_markdown = read_markdown_file("readme.md")
-        st.markdown(intro_markdown)
-    with st.expander('Instructions'):
-        st.markdown(instructions)
-
-    if file is not None:
-        ds = pd.read_csv(file)
-        st.sidebar.write("Here is the dataset used in this analysis:")
-        st.sidebar.write(ds)
-
-        data = Data(ds, pandas=True)
-        d = DimensionalAnalysis(data.parameters)
-        # figure, axes = d.pi_group_sets[0].plot()
-
-        st.subheader('Generating Possible Figures')
-        my_bar = st.progress(0)
-        st.write('Different Sets of Repeating Variables')
-        generate_plots(d)
-        st.balloons()
-
-elif option == 'Images':
-    image_files = st.sidebar.file_uploader('Image Uploader', type=['tif', 'png', 'jpg'], help='Upload .tif files to to test threshold values for Canny edge detection. Note multiple images can be uploaded but there is a 1 GB RAM limit and the application can begin to slow down if more than a couple hundred images are uploaded', accept_multiple_files=True)
-    st.subheader('Edges Detection and Contour Tracking')
-    with st.expander('Instructions'):
-        st.write('Upload images and then use the sliders to select the image and threshold values.')
-    if len(image_files) > 0:
-        image_number = 1
-        if len(image_files) > 1:
-            image_number = st.sidebar.slider('Image Number', min_value=1, max_value=len(image_files))
-        image = np.array(Image.open(image_files[image_number-1]))
-        try:
-            img_gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        except cv2.error:
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-        image_copy = image.copy()
-
-        threshold1 = st.sidebar.slider('Minimum Threshold', min_value=0, max_value=200, value=100, help='Any pixel below this threshold is eliminated, and any above are consider possible edges')
-        threshold2 = st.sidebar.slider('Definite Threshold', min_value=0, max_value=200, value=200, help='Any pixel above this threshold is consider a definite edge. Additionally any pixel above the minimum threshold and connected to a pixel already determined to be an edge will be declared an edge')
-        blur = st.sidebar.slider('blur', min_value=1, max_value=10, value=2, help='Filters out noise. Note: blur values must be odd so blur_value = 2 x slider_value + 1')
-
-        (contours, _), edge_img = find_contours(image, threshold1=threshold1, threshold2=threshold2, blur=2*blur-1)
-        image_copy = cv2.drawContours(image=image_copy, contours=contours, contourIdx=-1, color=(255, 100, 55), thickness=1, lineType=cv2.LINE_AA)
-        if st.sidebar.checkbox("Show just edges"):
-            st.image(edge_img)
-        else:
-            st.image(image_copy)
-
+if uploaded_file:
+    if uploaded_file[0].name[-3:] == 'csv':
+        csv_options(uploaded_file[0])
+    else:
+        image_options(uploaded_file)
 else:
-    st.subheader('Use the side bar to select the type of data you would like to process.')
+    instructions = 'Upload either images or data in a csv file'
+    with st.expander('Instructions', expanded=True):
+        st.markdown(instructions)
+        st.markdown('### Instructions for Uploading a CSV File')
+        st.image(r'information_files/basic_table.png')
+        st.markdown(Path(r'information_files/csv_file.md').read_text())
+    with st.expander('BETA feature: Governing Equations'):
+        governing_equations()
 
+
+# if 'stuff' not in st.session_state:
+#     st.session_state['stuff'] = {}
+# # st.write(st.session_state.stuff)
+#
+# item = tuple(st.text_input('stuff_adder').split())
+# if item and item not in st.session_state.stuff:
+#     st.session_state.stuff[item] = True
+#
+# # st.write
+# st.write(st.session_state.stuff)
+# for element in st.session_state.stuff:
+#     if st.checkbox(element, value=True):
+#         st.session_state.stuff[element] = True
+#     else:
+#         # st.write('remove')
+#         st.session_state.stuff[element] = False
+# st.write(st.session_state.stuff)
 

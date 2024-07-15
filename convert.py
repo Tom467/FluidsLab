@@ -1,3 +1,4 @@
+import numpy as np
 
 
 class Convert:
@@ -33,6 +34,7 @@ class Convert:
         # Angle
         self.rad = 1
         self.deg = 3.141592653589793238462643383279/180 * self.rad
+        self.rev = 2 * 3.141592653589793238462643383279 * self.rad
 
         # Force
         self.N = self.kg * self.m / self.s ** 2
@@ -63,6 +65,12 @@ class Convert:
             'atto':  10 ** -18
         }
 
+    def __getattr__(self, item):
+        return getattr(self, item)
+
+    def get_conversion_factor(self):
+        return {name: 1 for name in dir(self) if '__' not in name}
+
 
 class ConvertTemperature:
     def __init__(self, temp):
@@ -72,3 +80,11 @@ class ConvertTemperature:
         self.C = (temp + 273.15) / temp
         self.F = ((temp - 32) * 5 / 9 + 273.15) / temp
         self.Rankine = 0.556
+
+
+
+if __name__ == "__main__":
+    c = Convert()
+    print(c.get_conversion_factor())
+    print(getattr(c, 'mm'))
+    print(c['mm'])

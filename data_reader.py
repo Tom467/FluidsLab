@@ -6,9 +6,9 @@ from buckingham_pi_theorem.dimensional_analysis import DimensionalAnalysis
 
 
 class Data:
-    def __init__(self, file, pandas=False):
-        self.file_location = '' if pandas else file
-        self.data = file if pandas else self.read_file(self.file_location)
+    def __init__(self, file):
+        self.file_location = '' if isinstance(file, pd.core.frame.DataFrame) else file
+        self.data = file if isinstance(file, pd.core.frame.DataFrame) else self.read_file(self.file_location)
         self.parameters = self.generate_list_of_parameters()
 
     @staticmethod
@@ -27,16 +27,20 @@ class Data:
 
 
 if __name__ == "__main__":
-    experiment = Data("C:/Users/truma/Downloads/test - bernoulli_v2.csv")
-    d = DimensionalAnalysis(experiment.parameters)
+    experiment = Data("C:/Users/truma/Downloads/testdata3.csv")
+    print([param.name for param in experiment.parameters[2:6]])
+    print([param.name for param in experiment.parameters[2:4]])
+    d = DimensionalAnalysis(experiment.parameters[2:7], repeating_parameters=experiment.parameters[2:4])
     d.plot()
+
+#['V_i', 'd_{hmax}', 'a', 'b', 'g'] ['V_i', 'd_{hmax}']
 
     # [print(group, '\n', group.repeating_variables) for group in d.pi_group_sets]
 
-    values = [80, 20, 9.8, 1, 1, 1]
-    test = ListOfParameters([])
-    for i, parameter in enumerate(experiment.parameters[1:]):
-        # print(Parameter(value=values[i], units=parameter.units, name=parameter.name))
-        test.append(Parameter(value=values[i], units=parameter.units, name=parameter.name))
-    print('test', test)
+    # values = [80, 20, 9.8, 1, 1, 1]
+    # test = ListOfParameters([])
+    # for i, parameter in enumerate(experiment.parameters[1:]):
+    #     # print(Parameter(value=values[i], units=parameter.units, name=parameter.name))
+    #     test.append(Parameter(value=values[i], units=parameter.units, name=parameter.name))
+    # print('test', test)
     # test = d.predict(experiment.parameters)

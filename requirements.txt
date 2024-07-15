@@ -1,6 +1,11 @@
 numpy
+sympy
+ipython
 streamlit
 matplotlib
 pandas
 scikit-learn
 opencv-python-headless
+seaborn
+scipy
+bokeh==2.4.3

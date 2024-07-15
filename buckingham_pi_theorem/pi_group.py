@@ -18,7 +18,10 @@ class PiGroup:
         # TODO add some check to see if the Pi group is something common like the Reynold's Number
 
     def __str__(self):
-        return self.formula  # str(self.values) + ' ' + str(self.formula)
+        text = self.parameters[0].name
+        for i, param in enumerate(self.parameters[1:]):
+            text += '*' + param.name + str(self.exponents[i])
+        return text  # self.formula  # str(self.values) + ' ' + str(self.formula)
 
     def __eq__(self, other):
         return self.formula == other.formula or self.formula == other.formula_inverse
@@ -26,7 +29,7 @@ class PiGroup:
     def _define_pi_group(self):
         M = DimensionalMatrix(self.parameters.units).M
         A, B = M[:, 1:], M[:, 0]
-        self.exponents = np.round(-(np.linalg.inv(A) @ B), 2)  # TODO rounding might cause problems with small fractions
+        self.exponents = -(np.linalg.inv(A) @ B)  # TODO rounding might cause problems with small fractions
         self.values = self.calculate_value(self.parameters)
         # TODO add logic to make sure x is a vector of integers if raising units to this power
 
@@ -38,8 +41,8 @@ class PiGroup:
         # TODO figure out what to return in addition to the total
 
     def contains(self, other_name):
-        for param in self.parameters:
-            if param.name == other_name:
+        for i, param in enumerate(self.parameters):
+            if param.name == other_name and self.exponents[i-1] != 0:
                 return True
         return False
 
@@ -54,15 +57,16 @@ class PiGroup:
                     if self.exponents[i-1] == 1:
                         top += f'({parameter.name})'
                     else:
-                        top += f'({parameter.name}^'+'{'+f'{self.exponents[i-1]}'+'})'
+                        top += f'({parameter.name})^'+'{'+f'{int(self.exponents[i-1]) if self.exponents[i-1] % 1 == 0 else self.exponents[i-1]}'+'}'
                 elif self.exponents[i-1] < 0:
                     if self.exponents[i-1] == -1:
                         bottom += f'({parameter.name})'
                     else:
-                        bottom += f'({parameter.name}^'+'{'+f'{-self.exponents[i-1]}'+'})'
-
-        self.formula = r'$\frac{t}{b}$'.replace('t', top).replace('b', bottom) if bottom else top
-        self.formula_inverse = f'{bottom} / {top}' if top else bottom
+                        bottom += f'({parameter.name})^'+'{'+f'{-int(self.exponents[i-1]) if self.exponents[i-1] % 1 == 0 else -self.exponents[i-1]}'+'}'
+        if top == '(b_!)':
+            print('Error: cannot use b_! as parameter name')
+        self.formula = r'$\frac{t}{b_!}$'.replace('t', top).replace('b_!', bottom) if bottom else top
+        self.formula_inverse = r'$\frac{b_!}{t}$'.replace('t', top).replace('b_!', bottom if bottom else '1')  # f'{bottom} / {top}' if top else bottom
 
 
 class PiGroupSet:
@@ -89,9 +93,10 @@ class PiGroupSet:
             self.pi_groups.append(pi_group)
 
     def plot(self):
-        figure, axis = plt.subplots(1, len(self.pi_groups))
+        figure, axis = plt.subplots(1, len(self.pi_groups)-1)
         for i, pi_group in enumerate(self.pi_groups[1:]):
             axis[i].scatter(pi_group.values, self.pi_groups[0].values)
+            axis[i].set_xlabel(pi_group.formula)
             axis[i].set_ylabel(self.pi_groups[0].formula)
         return figure, axis
 
