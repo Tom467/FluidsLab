@@ -45,7 +45,7 @@ Dimensional analysis has traditionally been done by hand by the experimenter. Th
 
 2. **Instructions for Use**
 
-   As mentioned in the Introduction, there are currently a large number of files currently in the repository (some of them experimental features which have not yet been developed), but use of the dimensional analysis app only involves a few of the files.  The user should first install conda with Python.  The following files then need to be cloned from the FluidsLab repository to the user's IDE:
+   As mentioned in the Introduction, there are currently a large number of files currently in the repository (some of them experimental features which have not yet been developed), but use of the dimensional analysis app only involves a few of the files.  The user should first install conda with Python and install the libraries in requirements.txt.  The following files then need to be cloned from the FluidsLab repository to the user's IDE:
 
 FluidsLab_interface.py, dimensional_analysis.py, dimensional_matrix.py, pi_group.py, data_reader.py, fluids.py, parameter.py, plotter.py, units.py, util.py, convert.py
 
