@@ -1,7 +1,7 @@
 **FluidsLab**
 This software package automatically processes experimently collected data using Buckingham Pi Theory in order to display in chart format all possible correlations between experimental variables or parameters.
 
-There are various other files in this repository which are planned for future development, but currently the main feature of the software is a ''dimensional analysis app'' which enables one to input a data file and automatically generate plots of scalings.  In Section 1, we give an overview of why such an app is useful for experimentalists and explain some of the associated theory of dimensional analysis.  In Section 2, we provide instructions how to run the app using the files in the repository.
+There are various other files in this repository which are planned for future development (including more extensive use of machine learning), but currently the main feature of the software is a ''dimensional analysis app'' which enables one to input a data file and automatically generate plots of scalings.  In Section 1, we give an overview of why such an app is useful for experimentalists and explain some of the associated theory of dimensional analysis.  In Section 2, we provide instructions how to run the app using the files in the repository.
 
 1. **Overview**
 
